@@ -1,0 +1,34 @@
+% script_inputPipeProperties
+
+i = 1;
+pipe(i).tag = 'L1';
+pipe(i).c  = 1000; % wave speed
+pipe(i).D  = 0.2;  % diameter
+pipe(i).f  = 0.02; % friction factor
+pipe(i).Nx = 400;  % number of reaches
+i = 2;
+pipe(i).tag = 'D1';
+pipe(i).c  = 800;
+pipe(i).D  = 0.205;
+pipe(i).f  = 0.025;
+pipe(i).Nx = 4;
+i = 3;
+pipe(i).tag = 'L2';
+pipe(i).c  = 1000;
+pipe(i).D  = 0.2;
+pipe(i).f  = 0.02;
+pipe(i).Nx = 50;
+%pipe(i).startNode = 4;
+%pipe(i).endNode = 5;
+i = 4;
+pipe(i).tag = 'D2';
+pipe(i).c  = 850;
+pipe(i).D  = 0.201;
+pipe(i).f  = 0.03;
+pipe(i).Nx = 8;
+i = 5;
+pipe(i).tag = 'L3';
+pipe(i).c  = 1000;
+pipe(i).D  = 0.2;
+pipe(i).f  = 0.02;
+pipe(i).Nx = 700;
