@@ -12,8 +12,8 @@ HL = HLSS + zeros(Nt,1);%time series of downstream head
 H0 = H0SS + 10*ones(Nt,1);  % time series of upstream head
 Dt = 0.001; % time step
 t = [1:Nt]'*2*Dt;%summation of time steps
-datH = zeros(Nt,2);%Build vector to store head values
-datQ = zeros(Nt,2);%Build vector to store flow values
+datH = zeros(Nt,1);%Build vector to store head values
+datQ = zeros(Nt,1);%Build vector to store flow values
 
 script_inputPipeProperties %Use to generate house network 
 script_computePipeProperties %General code to build other values for the pipes (does not need to eb altered)
@@ -23,49 +23,213 @@ script_computeAndInitialiseSteadyStateP %Generate starting Head and flow values 
 for i = 1:Nt
 % Store fixed situation here (e.g. closure of valve, Q=0)
 % Storing Measurements
-    datH(i,1) = pipe(1).Ho(150);%Head at point 1, for storing values
+    datH(i,1) = pipe(2,1).Ho(10);%Head at point 1, for storing values
     datQ(i,1) = pipe(1).Qo(1);%Flow at point 1, for storing values
-% Computing the following head values WITHIN each pipe (no pipe network interactions required)  
-    for j = 1:length(pipe)
+% Computing the following head values WITHIN each pipe (no pipe network interactions required)
+    for k = 1:8
+    for j = 1:2
 %        disp(['Pipe = ' int2str(j)])
 % Computing internal node values for "inner" nodes
-        [pipe(j).Hi pipe(j).Qi]  = computeMOCInternalNodes(pipe(j).B,pipe(j).R,pipe(j).Ho,pipe(j).Qo);
+        [pipe(k,j).Hi pipe(k,j).Qi]  = computeMOCInternalNodes(pipe(k,j).B,pipe(k,j).R,pipe(k,j).Ho,pipe(k,j).Qo);
 % Computing internal node values for "outer" nodes
-        [pipe(j).HoI pipe(j).QoI] = computeMOCInternalNodes(pipe(j).B,pipe(j).R,pipe(j).Hi,pipe(j).Qi);
+        [pipe(k,j).HoI pipe(k,j).QoI] = computeMOCInternalNodes(pipe(k,j).B,pipe(k,j).R,pipe(k,j).Hi,pipe(k,j).Qi);
+    end   
     end
 % Computing upstream boundary condition
-    pipe(1).HoU = H0(i);%steady state of reservoir (upstream)head as identified above
-    Cm = pipe(1).Hi(1) - pipe(1).Qi(1)*(pipe(1).B-pipe(1).R*abs(pipe(1).Qi(1)));%Calc corresponding Cm
-    pipe(1).QoU = (H0(i) - Cm) / pipe(1).B; %Calc Upstream flow
-    for j = 1:length(pipe)-2 %for each junction (only one junction in this case)
+    pipe(1,1).HoU = H0(i);%steady state of reservoir (upstream)head as identified above
+    Cm = pipe(1,1).Hi(1) - pipe(1,1).Qi(1)*(pipe(1,1).B-pipe(1,1).R*abs(pipe(1,1).Qi(1)));%Calc corresponding Cm
+    pipe(1,1).QoU = (H0(i) - Cm) / pipe(1,1).B; %Calc Upstream flow
+    %for j = 1:length(pipe)-2 %for each junction (only one junction in this case)
     % downstream of pipe i
-        Hu = pipe(j).Hi(pipe(j).Nx/2); Qu = pipe(j).Qi(pipe(j).Nx/2); %Upstream head and flow
-        Bu = pipe(j).B;                Ru = pipe(j).R; %Upstream B and R
-        Hd1 = pipe(j+1).Hi(1);          Qd1 = pipe(j+1).Qi(1); %Downstream pipe 1 properties at junction
-        Bd1 = pipe(j+1).B;              Rd1 = pipe(j+1).R;
-        Hd2 = pipe(j+2).Hi(1);          Qd2 = pipe(j+2).Qi(1); %Downstream pipe 2 properties at junction (error here; I dont know what the problem is)
-        Bd2 = pipe(j+2).B;              Rd2 = pipe(j+2).R;
+%~~~SERIES 1 CONNECTION----------------------------------
+    k=1; j=1;           %Indicates which pipe
+        Ha = pipe(k,j).Hi(pipe(k,j).Nx/2); Qa = pipe(k,j).Qi(pipe(k,j).Nx/2);
+        Ba = pipe(k,j).B;                Ra = pipe(k,j).R; %Upstream B and R
+        Hb = pipe(k,j+1).Hi(1);          Qb = pipe(k,j+1).Qi(1); %Downstream pipe 1 properties at junction
+        Bb = pipe(k,j+1).B;              Rb = pipe(k,j+1).R;
         
-        [Hn Qn] = computeMOCNodesP(Hu,Qu,Bu,Ru,Hd1,Qd1,Bd1,Rd1,Hd2,Qd2,Bd2,Rd2); %computes head and flow at junction 
-% load into pipes; allocating the junction values to be placed into the
-% corresponding pipes
-        pipe(j).HoD   = Hn; 
-        pipe(j).QoD   = Qn;
-        pipe(j+1).HoU = Hn;
-        pipe(j+1).QoU = Qn;
-        pipe(j+2).HoU = Hn;
-        pipe(j+2).QoU = Qn;
+    [Hn Qn] = computeMOCNodesS(Ha,Qa,Ba,Ra,Hb,Qb,Bb,Rb);
+        pipe(k,j).HoD   = Hn; 
+        pipe(k,j).QoD   = Qn;
+        pipe(k,j+1).HoU = Hn;
+        pipe(k,j+1).QoU = Qn;
+%--------------------------------------------------------
+%---PARALLEL A CONNECTION -------------------------------     
+    k = 1; j = 1;
+        Hu = pipe(k,j+1).Hi(pipe(k,j+1).Nx/2); Qu = pipe(k,j+1).Qi(pipe(k,j+1).Nx/2); %Upstream head and flow
+        Bu = pipe(k,j+1).B;                Ru = pipe(k,j+1).R; %Upstream B and R
+        Hd1 = pipe(k+1,j).Hi(1);          Qd1 = pipe(k+1,j).Qi(1); %Downstream pipe 1 properties at junction
+        Bd1 = pipe(k+1,j).B;              Rd1 = pipe(k+1,j).R;
+        Hd2 = pipe(k+2,j).Hi(1);          Qd2 = pipe(k+2,j).Qi(1); %Downstream pipe 2 properties at junction (error here; I dont know what the problem is)
+        Bd2 = pipe(k+2,j).B;              Rd2 = pipe(k+2,j).R;
+        
+        [Hn Qn] = computeMOCNodesP1(Hu,Qu,Bu,Ru,Hd1,Qd1,Bd1,Rd1,Hd2,Qd2,Bd2,Rd2); %computes head and flow at junction 
+        pipe(k,j+1).HoD   = Hn; 
+        pipe(k,j+1).QoD   = Qn;
+        pipe(k+1,j).HoU = Hn;
+        pipe(k+1,j).QoU = Qn;
+        pipe(k+2,j).HoU = Hn;
+        pipe(k+2,j).QoU = Qn;
+%---SERIES 2 CONNECTION ---------------------------------
+    k=2; j=1;
+        Ha = pipe(k,j).Hi(pipe(k,j).Nx/2); Qa = pipe(k,j).Qi(pipe(k,j).Nx/2);
+        Ba = pipe(k,j).B;                Ra = pipe(k,j).R; %Upstream B and R
+        Hb = pipe(k,j+1).Hi(1);          Qb = pipe(k,j+1).Qi(1); %Downstream pipe 1 properties at junction
+        Bb = pipe(k,j+1).B;              Rb = pipe(k,j+1).R;
+        
+    [Hn Qn] = computeMOCNodesS(Ha,Qa,Ba,Ra,Hb,Qb,Bb,Rb);
+        pipe(k,j).HoD   = Hn; 
+        pipe(k,j).QoD   = Qn;
+        pipe(k,j+1).HoU = Hn;
+        pipe(k,j+1).QoU = Qn;
+%---SERIES 3 CONNECTION --------------------------------
+    k=3; j=1;
+        Ha = pipe(k,j).Hi(pipe(k,j).Nx/2); Qa = pipe(k,j).Qi(pipe(k,j).Nx/2);
+        Ba = pipe(k,j).B;                Ra = pipe(k,j).R; %Upstream B and R
+        Hb = pipe(k,j+1).Hi(1);          Qb = pipe(k,j+1).Qi(1); %Downstream pipe 1 properties at junction
+        Bb = pipe(k,j+1).B;              Rb = pipe(k,j+1).R;
+        
+    [Hn Qn] = computeMOCNodesS(Ha,Qa,Ba,Ra,Hb,Qb,Bb,Rb);
+        pipe(k,j).HoD   = Hn; 
+        pipe(k,j).QoD   = Qn;
+        pipe(k,j+1).HoU = Hn;
+        pipe(k,j+1).QoU = Qn;
+%-------------------------------------------------------
+%---PARALLEL B CONNECTION ------------------------------
+   k = 2; j = 1;
+        Hu = pipe(k,j+1).Hi(pipe(k,j+1).Nx/2); Qu = pipe(k,j+1).Qi(pipe(k,j+1).Nx/2); %Upstream head and flow
+        Bu = pipe(k,j+1).B;                Ru = pipe(k,j+1).R; %Upstream B and R
+        Hd1 = pipe(k+2,j).Hi(1);          Qd1 = pipe(k+2,j).Qi(1); %Downstream pipe 1 properties at junction
+        Bd1 = pipe(k+2,j).B;              Rd1 = pipe(k+2,j).R;
+        Hd2 = pipe(k+4,j).Hi(1);          Qd2 = pipe(k+4,j).Qi(1); %Downstream pipe 2 properties at junction (error here; I dont know what the problem is)
+        Bd2 = pipe(k+4,j).B;              Rd2 = pipe(k+4,j).R;
+        
+        [Hn Qn] = computeMOCNodesP1(Hu,Qu,Bu,Ru,Hd1,Qd1,Bd1,Rd1,Hd2,Qd2,Bd2,Rd2); %computes head and flow at junction 
+        pipe(k,j+1).HoD   = Hn; 
+        pipe(k,j+1).QoD   = Qn;
+        pipe(k+2,j).HoU = Hn;
+        pipe(k+2,j).QoU = Qn;
+        pipe(k+4,j).HoU = Hn;
+        pipe(k+4,j).QoU = Qn;
+%---SERIES 4 CONNECTION -----------------------------
+    k=4; j=1;
+        Ha = pipe(k,j).Hi(pipe(k,j).Nx/2); Qa = pipe(k,j).Qi(pipe(k,j).Nx/2);
+        Ba = pipe(k,j).B;                Ra = pipe(k,j).R; %Upstream B and R
+        Hb = pipe(k,j+1).Hi(1);          Qb = pipe(k,j+1).Qi(1); %Downstream pipe 1 properties at junction
+        Bb = pipe(k,j+1).B;              Rb = pipe(k,j+1).R;
+        
+    [Hn Qn] = computeMOCNodesS(Ha,Qa,Ba,Ra,Hb,Qb,Bb,Rb);
+        pipe(k,j).HoD   = Hn; 
+        pipe(k,j).QoD   = Qn;
+        pipe(k,j+1).HoU = Hn;
+        pipe(k,j+1).QoU = Qn;
+%---AT FIXTURE 4
+    k=4; j=2;
+    pipe(k,j).QoD = 0;
+    Cp = pipe(k,j).Hi(pipe(k,j).Nx/2) + pipe(k,j).Qi(pipe(k,j).Nx/2)*(pipe(k,j).B-pipe(k,j).R*abs(pipe(k,j).Qi(pipe(k,j).Nx/2)));
+    pipe(k,j).HoD =  - Cp - pipe(k,j).QoD*pipe(k,j).B;
+%---SERIES 6 CONNECTION --------------------------------
+    k=6; j=1;
+        Ha = pipe(k,j).Hi(pipe(k,j).Nx/2); Qa = pipe(k,j).Qi(pipe(k,j).Nx/2);
+        Ba = pipe(k,j).B;                Ra = pipe(k,j).R; %Upstream B and R
+        Hb = pipe(k,j+1).Hi(1);          Qb = pipe(k,j+1).Qi(1); %Downstream pipe 1 properties at junction
+        Bb = pipe(k,j+1).B;              Rb = pipe(k,j+1).R;
+        
+    [Hn Qn] = computeMOCNodesS(Ha,Qa,Ba,Ra,Hb,Qb,Bb,Rb);
+        pipe(k,j).HoD   = Hn; 
+        pipe(k,j).QoD   = Qn;
+        pipe(k,j+1).HoU = Hn;
+        pipe(k,j+1).QoU = Qn;
+%-------------------------------------------------------
+%---PARALLEL C CONNECTION ------------------------------
+   k = 3; j = 1;
+        Hu = pipe(k,j+1).Hi(pipe(k,j+1).Nx/2); Qu = pipe(k,j+1).Qi(pipe(k,j+1).Nx/2); %Upstream head and flow
+        Bu = pipe(k,j+1).B;                Ru = pipe(k,j+1).R; %Upstream B and R
+        Hd1 = pipe(k+2,j).Hi(1);          Qd1 = pipe(k+2,j).Qi(1); %Downstream pipe 1 properties at junction
+        Bd1 = pipe(k+2,j).B;              Rd1 = pipe(k+2,j).R;
+        Hd2 = pipe(k+4,j).Hi(1);          Qd2 = pipe(k+4,j).Qi(1); %Downstream pipe 2 properties at junction (error here; I dont know what the problem is)
+        Bd2 = pipe(k+4,j).B;              Rd2 = pipe(k+4,j).R;
+        
+        [Hn Qn] = computeMOCNodesP1(Hu,Qu,Bu,Ru,Hd1,Qd1,Bd1,Rd1,Hd2,Qd2,Bd2,Rd2); %computes head and flow at junction 
+        pipe(k,j+1).HoD   = Hn; 
+        pipe(k,j+1).QoD   = Qn;
+        pipe(k+2,j).HoU = Hn;
+        pipe(k+2,j).QoU = Qn;
+        pipe(k+4,j).HoU = Hn;
+        pipe(k+4,j).QoU = Qn;
+%---SERIES 5 CONNECTION -----------------------------
+    k=5; j=1;
+        Ha = pipe(k,j).Hi(pipe(k,j).Nx/2); Qa = pipe(k,j).Qi(pipe(k,j).Nx/2);
+        Ba = pipe(k,j).B;                Ra = pipe(k,j).R; %Upstream B and R
+        Hb = pipe(k,j+1).Hi(1);          Qb = pipe(k,j+1).Qi(1); %Downstream pipe 1 properties at junction
+        Bb = pipe(k,j+1).B;              Rb = pipe(k,j+1).R;
+        
+    [Hn Qn] = computeMOCNodesS(Ha,Qa,Ba,Ra,Hb,Qb,Bb,Rb);
+        pipe(k,j).HoD   = Hn; 
+        pipe(k,j).QoD   = Qn;
+        pipe(k,j+1).HoU = Hn;
+        pipe(k,j+1).QoU = Qn;
+%---AT FIXTURE 5
+    k=5; j=2;
+    pipe(k,j).QoD = 0;
+    Cp = pipe(k,j).Hi(pipe(k,j).Nx/2) + pipe(k,j).Qi(pipe(k,j).Nx/2)*(pipe(k,j).B-pipe(k,j).R*abs(pipe(k,j).Qi(pipe(k,j).Nx/2)));
+    pipe(k,j).HoD =  - Cp - pipe(k,j).QoD*pipe(k,j).B;
+ 
+%---SERIES 7 CONNECTION --------------------------------
+    k=7; j=1;
+        Ha = pipe(k,j).Hi(pipe(k,j).Nx/2); Qa = pipe(k,j).Qi(pipe(k,j).Nx/2);
+        Ba = pipe(k,j).B;                Ra = pipe(k,j).R; %Upstream B and R
+        Hb = pipe(k,j+1).Hi(1);          Qb = pipe(k,j+1).Qi(1); %Downstream pipe 1 properties at junction
+        Bb = pipe(k,j+1).B;              Rb = pipe(k,j+1).R;
+        
+    [Hn Qn] = computeMOCNodesS(Ha,Qa,Ba,Ra,Hb,Qb,Bb,Rb);
+        pipe(k,j).HoD   = Hn; 
+        pipe(k,j).QoD   = Qn;
+        pipe(k,j+1).HoU = Hn;
+        pipe(k,j+1).QoU = Qn;      
+%------------------------------------------------------------
+%---PARALLEL D CONNECTION -----------------------------------
+    k = 6; j = 1;
+        Hu1 = pipe(k,j+1).Hi(pipe(k,j+1).Nx/2); Qu1 = pipe(k,j+1).Qi(pipe(k,j+1).Nx/2); %Upstream head and flow
+        Bu1 = pipe(k,j+1).B;                Ru1 = pipe(k,j+1).R; %Upstream B and R
+        Hu2 = pipe(k+1,j+1).Hi(pipe(k+1,j+1).Nx/2); Qu2 = pipe(k+1,j+1).Qi(pipe(k+1,j+1).Nx/2); %Upstream head and flow
+        Bu2 = pipe(k+1,j+1).B;                Ru2 = pipe(k+1,j+1).R;
+        Hd = pipe(k+2,j).Hi(1);          Qd = pipe(k+2,j).Qi(1); %Downstream pipe 2 properties at junction (error here; I dont know what the problem is)
+        Bd = pipe(k+2,j).B;              Rd = pipe(k+2,j).R;
+        
+        [Hn Qn] = computeMOCNodesP2(Hu1,Qu1,Bu1,Ru1,Hu2,Qu2,Bu2,Ru2,Hd,Qd,Bd,Rd); %computes head and flow at junction 
+        pipe(k,j+1).HoD   = Hn; 
+        pipe(k,j+1).QoD   = Qn;
+        pipe(k+1,j+1).HoD = Hn;
+        pipe(k+1,j+1).QoD = Qn;
+        pipe(k+2,j).HoU = Hn;
+        pipe(k+2,j).QoU = Qn;
+%---SERIES 8 CONNECTION --------------------------------
+    k=8; j=1;
+        Ha = pipe(k,j).Hi(pipe(k,j).Nx/2); Qa = pipe(k,j).Qi(pipe(k,j).Nx/2);
+        Ba = pipe(k,j).B;                Ra = pipe(k,j).R; %Upstream B and R
+        Hb = pipe(k,j+1).Hi(1);          Qb = pipe(k,j+1).Qi(1); %Downstream pipe 1 properties at junction
+        Bb = pipe(k,j+1).B;              Rb = pipe(k,j+1).R;
+        
+    [Hn Qn] = computeMOCNodesS(Ha,Qa,Ba,Ra,Hb,Qb,Bb,Rb);
+        pipe(k,j).HoD   = Hn; 
+        pipe(k,j).QoD   = Qn;
+        pipe(k,j+1).HoU = Hn;
+        pipe(k,j+1).QoU = Qn;
+%-----------------------------------------------------------------        
+      % Downstream BC of pipe 8 (where fixture occurs)
+    k=8; j=2;
+    pipe(k,j).HoD = HL(i);
+    Cp = pipe(k,j).Hi(pipe(k,j).Nx/2) + pipe(k,j).Qi(pipe(k,j).Nx/2)*(pipe(k,j).B-pipe(k,j).R*abs(pipe(k,j).Qi(pipe(k,j).Nx/2)));
+    pipe(k,j).QoD =  - (HL(i) - Cp) / pipe(k,j).B;
+%---SUMMING UP --------------------------------------------
+    for k = 1:8
+        for j = 1:2
+            pipe(k,j).Ho   = [pipe(k,j).HoU ; pipe(k,j).HoI ; pipe(k,j).HoD];
+            pipe(k,j).Qo   = [pipe(k,j).QoU ; pipe(k,j).QoI ; pipe(k,j).QoD];
     end
-% Downstream BC of pipe 2 (where fixture occurs)
-    pipe(2).HoD = HL(i);
-    Cp = pipe(2).Hi(pipe(2).Nx/2) + pipe(2).Qi(pipe(2).Nx/2)*(pipe(2).B-pipe(2).R*abs(pipe(2).Qi(pipe(2).Nx/2)));
-    pipe(2).QoD =  - (HL(i) - Cp) / pipe(2).B;
-    for j = 1:length(pipe)
-        pipe(j).Ho   = [pipe(j).HoU ; pipe(j).HoI ; pipe(j).HoD];
-        pipe(j).Qo   = [pipe(j).QoU ; pipe(j).QoI ; pipe(j).QoD];
-    end
-    
-  
+            
 end
-
-  %plot(t,datQ(1:Nt,2))
+    
+end
+%  plot(t,datH(1:Nt,1))
