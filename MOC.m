@@ -6,11 +6,11 @@ g = 9.81;%gravitational acceleration
 rho = 1000;
 Nt = 10000;%number of pipe sections
 H0SS = 25; % Upstream reservoir steady-state head
-HLSS = 0; %downstream reservoir steady-state head (if 0 then valve is open)
-HL = HLSS + zeros(Nt,1);%time series of downstream head
+HLSS = 10; %downstream reservoir steady-state head (if 0 then valve is open)
+HL = HLSS * ones(Nt,1);%time series of downstream head
 %H0 = H0SS + 10 * [ones(500,1) ; zeros(Nt-500,1)];
 H0 = H0SS * ones(Nt,1);  % time series of upstream head
-Dt = 0.0001; % time step
+Dt = 0.0001; % time it takes a wave to travel a reach
 t = [1:Nt]'*2*Dt;%summation of time steps
 datH = zeros(Nt,3);%Build vector to store head values
 datQ = zeros(Nt,1);%Build vector to store flow values
@@ -127,10 +127,17 @@ for i = 1:Nt
         pipe(k,j+1).QoU = Qnu;
 %---AT FIXTURE 4
     k=4; j=2;
-    % dH = ?; pipe(k,j).QoD = C * A * sqrt(2*dH);
     pipe(k,j).QoD = 0;
-    Cp = pipe(k,j).Hi(pipe(k,j).Nx/2) + pipe(k,j).Qi(pipe(k,j).Nx/2)*(pipe(k,j).B-pipe(k,j).R*abs(pipe(k,j).Qi(pipe(k,j).Nx/2)));
-    pipe(k,j).HoD = Cp - pipe(k,j).QoD*pipe(k,j).B;
+    Cp = pipe(k,j).Hi(pipe(k,j).Nx/2) + pipe(k,j).Qi(pipe(k,j).Nx/2)*pipe(k,j).B;
+    Bp = pipe(k,j).B - pipe(k,j).R * abs(pipe(k,j).Qi(pipe(k,j).Nx/2));
+    %Cd = 0.998; aq = 1/(Cd * pipe(k,j).A * sqrt(2*g))^2;
+    %bq = pipe(k,j).B; cq = -Cp;  
+    %if pipe(k,j).Hi(pipe(k,j).Nx/ 2)<0
+    %    pipe(k,j).QoD = (bq - sqrt(bq^2 - 4*aq*cq))/(2*aq);
+    %else
+    %    pipe(k,j).QoD = (sqrt(bq^2 - 4*aq*cq) - bq)/(2*aq);
+    %end
+    pipe(k,j).HoD =  Cp - pipe(k,j).QoD*Bp;
 %---SERIES 6 CONNECTION --------------------------------
     k=6; j=1;
         Ha = pipe(k,j).Hi(pipe(k,j).Nx/2); Qa = pipe(k,j).Qi(pipe(k,j).Nx/2);
@@ -174,11 +181,17 @@ for i = 1:Nt
         pipe(k,j+1).QoU = Qnu;
 %---AT FIXTURE 5
     k=5; j=2;
-    %dH = ?; pipe(k,j).QoD = C*A*sqrt(2*g*dH);
     pipe(k,j).QoD = 0;
-    Cp = pipe(k,j).Hi(pipe(k,j).Nx/2) + pipe(k,j).Qi(pipe(k,j).Nx/2)*(pipe(k,j).B-pipe(k,j).R*abs(pipe(k,j).Qi(pipe(k,j).Nx/2)));
-    pipe(k,j).HoD =  Cp - pipe(k,j).QoD*pipe(k,j).B;
-
+    Cp = pipe(k,j).Hi(pipe(k,j).Nx/2) + pipe(k,j).Qi(pipe(k,j).Nx/2)*pipe(k,j).B;
+    Bp = pipe(k,j).B - pipe(k,j).R * abs(pipe(k,j).Qi(pipe(k,j).Nx/2));
+    %Cd = 0.998; aq = 1/(Cd * pipe(k,j).A * sqrt(2*g))^2;
+    %bq = pipe(k,j).B; cq = -Cp;  
+    %if pipe(k,j).Hi(pipe(k,j).Nx/ 2)<0
+    %    pipe(k,j).QoD = (bq - sqrt(bq^2 - 4*aq*cq))/(2*aq);
+    %else
+    %    pipe(k,j).QoD = (sqrt(bq^2 - 4*aq*cq) - bq)/(2*aq);
+    %end
+    pipe(k,j).HoD =  Cp - pipe(k,j).QoD*Bp;
 
 %---SERIES 7 CONNECTION --------------------------------
     k=7; j=1;
@@ -223,11 +236,18 @@ for i = 1:Nt
         pipe(k,j+1).QoU = Qnu;
 %-----------------------------------------------------------------        
       % Downstream BC of pipe 8 (where fixture occurs)
-    k=8; j=2; 
-    %dH = 15; pipe(k,j).QoD = 
-    pipe(k,j).QoD = 0.00003; 
-    Cp = pipe(k,j).Hi(pipe(k,j).Nx/2) + pipe(k,j).Qi(pipe(k,j).Nx/2)*(pipe(k,j).B-pipe(k,j).R*abs(pipe(k,j).Qi(pipe(k,j).Nx/2)));
-    pipe(k,j).HoD =  Cp - pipe(k,j).QoD*pipe(k,j).B;
+    k=8; j=2;
+    pipe(k,j).QoD = 0;
+    Cp = pipe(k,j).Hi(pipe(k,j).Nx/2) + pipe(k,j).Qi(pipe(k,j).Nx/2)*pipe(k,j).B;
+    Bp = pipe(k,j).B - pipe(k,j).R * abs(pipe(k,j).Qi(pipe(k,j).Nx/2));
+    %Cd = 0.998; aq = 1/(Cd * pipe(k,j).A * sqrt(2*g))^2;
+    %bq = pipe(k,j).B; cq = -Cp;  
+    %if pipe(k,j).Hi(pipe(k,j).Nx/ 2)<0
+    %    pipe(k,j).QoD = (bq - sqrt(bq^2 - 4*aq*cq))/(2*aq);
+    %else
+    %    pipe(k,j).QoD = (sqrt(bq^2 - 4*aq*cq) - bq)/(2*aq);
+    %end
+    pipe(k,j).HoD =  Cp - pipe(k,j).QoD*Bp;
 %---SUMMING UP --------------------------------------------
     for k = 1:8;
         for j = 1:2;
