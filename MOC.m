@@ -39,6 +39,7 @@ for i = 1:Nt
     end
 % Computing upstream boundary condition
     pipe(1,1).HoU = H0(i);%steady state of reservoir (upstream)head as identified above
+    %pipe(1,1).HoU 
     Cm = pipe(1,1).Hi(1) - pipe(1,1).Qi(1)*(pipe(1,1).B - pipe(1,1).R*abs(pipe(1,1).Qi(1)));%Calc corresponding Cm
     pipe(1,1).QoU = (H0(i) - Cm) / pipe(1,1).B; %Calc Upstream flow
     %for j = 1:length(pipe)-2 %for each junction (only one junction in this case)
@@ -51,6 +52,7 @@ for i = 1:Nt
         Bb = pipe(k,j+1).B;              Rb = pipe(k,j+1).R;
         
     [Hn Qnd Qnu] = computeMOCNodesS(Ha,Qa,Ba,Ra,Hb,Qb,Bb,Rb);
+      %  Hn
         pipe(k,j).HoD   = Hn; 
         pipe(k,j).QoD   = Qnd;
         pipe(k,j+1).HoU = Hn;
@@ -66,6 +68,7 @@ for i = 1:Nt
         Bd2 = pipe(k+2,j).B;              Rd2 = pipe(k+2,j).R;
         
         [Hn Qnd Qnu1 Qnu2] = computeMOCNodesP1(Hu,Qu,Bu,Ru,Hd1,Qd1,Bd1,Rd1,Hd2,Qd2,Bd2,Rd2); %computes head and flow at junction 
+     %   Hn
         pipe(k,j+1).HoD   = Hn; 
         pipe(k,j+1).QoD   = Qnd;
         pipe(k+1,j).HoU = Hn;
@@ -80,6 +83,7 @@ for i = 1:Nt
         Bb = pipe(k,j+1).B;              Rb = pipe(k,j+1).R;
         
     [Hn Qnd Qnu] = computeMOCNodesS(Ha,Qa,Ba,Ra,Hb,Qb,Bb,Rb);
+    %    Hn
         pipe(k,j).HoD   = Hn; 
         pipe(k,j).QoD   = Qnd;
         pipe(k,j+1).HoU = Hn;
@@ -92,6 +96,7 @@ for i = 1:Nt
         Bb = pipe(k,j+1).B;              Rb = pipe(k,j+1).R;
         
     [Hn Qnd Qnu] = computeMOCNodesS(Ha,Qa,Ba,Ra,Hb,Qb,Bb,Rb);
+    %    Hn
         pipe(k,j).HoD   = Hn; 
         pipe(k,j).QoD   = Qnd;
         pipe(k,j+1).HoU = Hn;
@@ -107,6 +112,7 @@ for i = 1:Nt
         Bd2 = pipe(k+4,j).B;              Rd2 = pipe(k+4,j).R;
         
         [Hn Qnd Qnu1 Qnu2] = computeMOCNodesP1(Hu,Qu,Bu,Ru,Hd1,Qd1,Bd1,Rd1,Hd2,Qd2,Bd2,Rd2); %computes head and flow at junction 
+    %    Hn
         pipe(k,j+1).HoD   = Hn; 
         pipe(k,j+1).QoD   = Qnd;
         pipe(k+2,j).HoU = Hn;
@@ -121,6 +127,7 @@ for i = 1:Nt
         Bb = pipe(k,j+1).B;              Rb = pipe(k,j+1).R;
         
     [Hn Qnd Qnu] = computeMOCNodesS(Ha,Qa,Ba,Ra,Hb,Qb,Bb,Rb);
+    %    Hn
         pipe(k,j).HoD   = Hn; 
         pipe(k,j).QoD   = Qnd;
         pipe(k,j+1).HoU = Hn;
@@ -138,6 +145,7 @@ for i = 1:Nt
     %    pipe(k,j).QoD = (sqrt(bq^2 - 4*aq*cq) - bq)/(2*aq);
     %end
     pipe(k,j).HoD =  Cp - pipe(k,j).QoD*Bp;
+    %pipe(k,j).HoD
 %---SERIES 6 CONNECTION --------------------------------
     k=6; j=1;
         Ha = pipe(k,j).Hi(pipe(k,j).Nx/2); Qa = pipe(k,j).Qi(pipe(k,j).Nx/2);
@@ -146,6 +154,7 @@ for i = 1:Nt
         Bb = pipe(k,j+1).B;              Rb = pipe(k,j+1).R;
         
     [Hn Qnd Qnu] = computeMOCNodesS(Ha,Qa,Ba,Ra,Hb,Qb,Bb,Rb);
+   % Hn
         pipe(k,j).HoD   = Hn; 
         pipe(k,j).QoD   = Qnd;
         pipe(k,j+1).HoU = Hn;
@@ -161,6 +170,7 @@ for i = 1:Nt
         Bd2 = pipe(k+4,j).B;              Rd2 = pipe(k+4,j).R;
         
         [Hn Qnd Qnu1 Qnu2] = computeMOCNodesP1(Hu,Qu,Bu,Ru,Hd1,Qd1,Bd1,Rd1,Hd2,Qd2,Bd2,Rd2); %computes head and flow at junction 
+  %     Hn
         pipe(k,j+1).HoD   = Hn; 
         pipe(k,j+1).QoD   = Qnd;
         pipe(k+2,j).HoU = Hn;
@@ -175,7 +185,8 @@ for i = 1:Nt
         Bb = pipe(k,j+1).B;              Rb = pipe(k,j+1).R;
         
     [Hn Qnd Qnu] = computeMOCNodesS(Ha,Qa,Ba,Ra,Hb,Qb,Bb,Rb);
-        pipe(k,j).HoD   = Hn; 
+ %   Hn    
+    pipe(k,j).HoD   = Hn; 
         pipe(k,j).QoD   = Qnd;
         pipe(k,j+1).HoU = Hn;
         pipe(k,j+1).QoU = Qnu;
@@ -192,7 +203,7 @@ for i = 1:Nt
     %    pipe(k,j).QoD = (sqrt(bq^2 - 4*aq*cq) - bq)/(2*aq);
     %end
     pipe(k,j).HoD =  Cp - pipe(k,j).QoD*Bp;
-
+%pipe(k,j).HoD
 %---SERIES 7 CONNECTION --------------------------------
     k=7; j=1;
         Ha = pipe(k,j).Hi(pipe(k,j).Nx/2); Qa = pipe(k,j).Qi(pipe(k,j).Nx/2);
@@ -201,6 +212,7 @@ for i = 1:Nt
         Bb = pipe(k,j+1).B;              Rb = pipe(k,j+1).R;
         
     [Hn Qnd Qnu] = computeMOCNodesS(Ha,Qa,Ba,Ra,Hb,Qb,Bb,Rb);
+    %Hn
         pipe(k,j).HoD   = Hn; 
         pipe(k,j).QoD   = Qnd;
         pipe(k,j+1).HoU = Hn;
@@ -216,6 +228,7 @@ for i = 1:Nt
         Bd = pipe(k+2,j).B;              Rd = pipe(k+2,j).R;
         
         [Hn Qnd1 Qnd2 Qnu] = computeMOCNodesP2(Hu1,Qu1,Bu1,Ru1,Hu2,Qu2,Bu2,Ru2,Hd,Qd,Bd,Rd); %computes head and flow at junction 
+     %   Hn
         pipe(k,j+1).HoD   = Hn; 
         pipe(k,j+1).QoD   = Qnd1;
         pipe(k+1,j+1).HoD = Hn;
@@ -230,6 +243,7 @@ for i = 1:Nt
         Bb = pipe(k,j+1).B;              Rb = pipe(k,j+1).R;
         
     [Hn Qnd Qnu] = computeMOCNodesS(Ha,Qa,Ba,Ra,Hb,Qb,Bb,Rb);
+    %Hn
         pipe(k,j).HoD   = Hn; 
         pipe(k,j).QoD   = Qnd;
         pipe(k,j+1).HoU = Hn;
@@ -237,17 +251,20 @@ for i = 1:Nt
 %-----------------------------------------------------------------        
       % Downstream BC of pipe 8 (where fixture occurs)
     k=8; j=2;
-    pipe(k,j).QoD = 0;
+    %pipe(k,j).QoD = 0;
     Cp = pipe(k,j).Hi(pipe(k,j).Nx/2) + pipe(k,j).Qi(pipe(k,j).Nx/2)*pipe(k,j).B;
     Bp = pipe(k,j).B - pipe(k,j).R * abs(pipe(k,j).Qi(pipe(k,j).Nx/2));
-    %Cd = 0.998; aq = 1/(Cd * pipe(k,j).A * sqrt(2*g))^2;
-    %bq = pipe(k,j).B; cq = -Cp;  
-    %if pipe(k,j).Hi(pipe(k,j).Nx/ 2)<0
-    %    pipe(k,j).QoD = (bq - sqrt(bq^2 - 4*aq*cq))/(2*aq);
-    %else
-    %    pipe(k,j).QoD = (sqrt(bq^2 - 4*aq*cq) - bq)/(2*aq);
-    %end
-    pipe(k,j).HoD =  Cp - pipe(k,j).QoD*Bp;
+    Cd = 0.998; aq = 1/(Cd * pipe(k,j).A * sqrt(2*g))^2;
+    bq = pipe(k,j).B; cq = -Cp;  
+    if Cp < 0 %pipe(k,j).Hi(pipe(k,j).Nx/ 2)<0;
+        pipe(k,j).QoD = (bq - sqrt(bq^2 - 4*aq*cq))/(2*aq);
+    else
+        pipe(k,j).QoD = (sqrt(bq^2 - 4*aq*cq) - bq)/(2*aq);
+    end
+    %pipe(k,j).QoD
+    pipe(k,j).HoD = Cp - pipe(k,j).QoD*Bp;
+    %pipe(k,j).HoD
+    
 %---SUMMING UP --------------------------------------------
     for k = 1:8;
         for j = 1:2;
