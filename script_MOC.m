@@ -1,10 +1,10 @@
  % script_seriesPipeSolver
-
+ function [dtH hK ddH] = script_MOC(diH,ss,cs)
 % Input parameters, basic upstream and downstream conditions
 %See MOC description froom Water III for further understanding
 g = 9.81;%gravitational acceleration
 rho = 1000;
-Nt = 10000;%number of pipe sections
+Nt = 30000;%number of pipe sections
 H0SS = 25; % Upstream reservoir steady-state head
 HLSS = 10; %downstream reservoir steady-state head (if 0 then valve is open)
 HL = HLSS * ones(Nt,1);%time series of downstream head
@@ -19,13 +19,28 @@ script_inputPipeProperties %Use to generate house network
 script_computePipeProperties %General code to build other values for the pipes (does not need to eb altered)
 script_computeAndInitialiseSteadyStateP %Generate starting Head and flow values (NOTE: CONTAINS HARD CODING SPECIFIC TO NETWORK)
 
+
+cct = [0 0];
+cnt = [1 0];
+%[(pipe(1,1).Ho)', (pipe(1,2).Ho)', pipe(2,1).Ho; pipe(2,2).Ho; pipe(3,1).Ho; pipe(3,2).Ho; pipe(4,1).Ho; pipe(4,2).Ho; pipe(5,1).Ho; pipe(5,2).Ho; pipe(6,1).Ho; pipe(6,2).Ho; pipe(7,1).Ho; pipe(7,2).Ho; pipe(8,1).Ho; pipe(8,2).Ho] = diH;
+for k=1:8
+    for j=1:2
+        cot=size(pipe(k,j).Ho);
+        cct=cot+cct;
+        pipe(k,j).Ho = diH(cnt(1):cct(1));
+        cnt=cct + [1 0];
+    end
+end
+
+        
+
 for i = 1:Nt
 % Store fixed situation here (e.g. closure of valve, Q=0)
 % Storing Measurements
-    datH(i,1) = pipe(1,2).Ho(10);%Head at point 1, for storing values
+    %datH(i,1) = pipe(1,2).Ho(10);%Head at point 1, for storing values
     datQ(i,1) = pipe(1,1).Qo(1);%Flow at point 1, for storing values
-    datH(i,2) = pipe(6,1).Ho(10);
-    datH(i,3) = pipe(8,2).Ho(10);
+    %datH(i,1) = pipe(6,1).Ho(10);
+    datH(i,1) = pipe(8,2).Ho(10);
 % Computing the following head values WITHIN each pipe (no pipe network interactions required)
     for k = 1:8
     for j = 1:2
@@ -134,18 +149,21 @@ for i = 1:Nt
         pipe(k,j+1).QoU = Qnu;
 %---AT FIXTURE 4
     k=4; j=2;
-    pipe(k,j).QoD = 0;
     Cp = pipe(k,j).Hi(pipe(k,j).Nx/2) + pipe(k,j).Qi(pipe(k,j).Nx/2)*pipe(k,j).B;
     Bp = pipe(k,j).B - pipe(k,j).R * abs(pipe(k,j).Qi(pipe(k,j).Nx/2));
-    %Cd = 0.998; aq = 1/(Cd * pipe(k,j).A * sqrt(2*g))^2;
-    %bq = pipe(k,j).B; cq = -Cp;  
-    %if pipe(k,j).Hi(pipe(k,j).Nx/ 2)<0
-    %    pipe(k,j).QoD = (bq - sqrt(bq^2 - 4*aq*cq))/(2*aq);
-    %else
-    %    pipe(k,j).QoD = (sqrt(bq^2 - 4*aq*cq) - bq)/(2*aq);
-    %end
+    if cs(1)<0.5
+        pipe(k,j).QoD = 0;
+    else
+        Cd = 0.998; aq = 1/(Cd * pipe(k,j).A * sqrt(2*g))^2;
+        bq = pipe(k,j).B; cq = -Cp;  
+        if Cp < 0
+            pipe(k,j).QoD = (bq - sqrt(bq^2 - 4*aq*cq))/(2*aq);
+        else
+            pipe(k,j).QoD = (sqrt(bq^2 - 4*aq*cq) - bq)/(2*aq);
+        end
+    end
     pipe(k,j).HoD =  Cp - pipe(k,j).QoD*Bp;
-    %pipe(k,j).HoD
+
 %---SERIES 6 CONNECTION --------------------------------
     k=6; j=1;
         Ha = pipe(k,j).Hi(pipe(k,j).Nx/2); Qa = pipe(k,j).Qi(pipe(k,j).Nx/2);
@@ -192,16 +210,19 @@ for i = 1:Nt
         pipe(k,j+1).QoU = Qnu;
 %---AT FIXTURE 5
     k=5; j=2;
-    pipe(k,j).QoD = 0;
     Cp = pipe(k,j).Hi(pipe(k,j).Nx/2) + pipe(k,j).Qi(pipe(k,j).Nx/2)*pipe(k,j).B;
     Bp = pipe(k,j).B - pipe(k,j).R * abs(pipe(k,j).Qi(pipe(k,j).Nx/2));
-    %Cd = 0.998; aq = 1/(Cd * pipe(k,j).A * sqrt(2*g))^2;
-    %bq = pipe(k,j).B; cq = -Cp;  
-    %if pipe(k,j).Hi(pipe(k,j).Nx/ 2)<0
-    %    pipe(k,j).QoD = (bq - sqrt(bq^2 - 4*aq*cq))/(2*aq);
-    %else
-    %    pipe(k,j).QoD = (sqrt(bq^2 - 4*aq*cq) - bq)/(2*aq);
-    %end
+    if cs(2)<0.5
+        pipe(k,j).QoD = 0;
+    else
+        Cd = 0.998; aq = 1/(Cd * pipe(k,j).A * sqrt(2*g))^2;
+        bq = pipe(k,j).B; cq = -Cp;  
+        if Cp < 0
+            pipe(k,j).QoD = (bq - sqrt(bq^2 - 4*aq*cq))/(2*aq);
+        else
+            pipe(k,j).QoD = (sqrt(bq^2 - 4*aq*cq) - bq)/(2*aq);
+        end
+    end
     pipe(k,j).HoD =  Cp - pipe(k,j).QoD*Bp;
 %pipe(k,j).HoD
 %---SERIES 7 CONNECTION --------------------------------
@@ -251,20 +272,20 @@ for i = 1:Nt
 %-----------------------------------------------------------------        
       % Downstream BC of pipe 8 (where fixture occurs)
     k=8; j=2;
-    %pipe(k,j).QoD = 0;
     Cp = pipe(k,j).Hi(pipe(k,j).Nx/2) + pipe(k,j).Qi(pipe(k,j).Nx/2)*pipe(k,j).B;
     Bp = pipe(k,j).B - pipe(k,j).R * abs(pipe(k,j).Qi(pipe(k,j).Nx/2));
-    Cd = 0.998; aq = 1/(Cd * pipe(k,j).A * sqrt(2*g))^2;
-    bq = pipe(k,j).B; cq = -Cp;  
-    if Cp < 0 %pipe(k,j).Hi(pipe(k,j).Nx/ 2)<0;
-        pipe(k,j).QoD = (bq - sqrt(bq^2 - 4*aq*cq))/(2*aq);
+    if cs(3)<0.5
+        pipe(k,j).QoD = 0;
     else
-        pipe(k,j).QoD = (sqrt(bq^2 - 4*aq*cq) - bq)/(2*aq);
+        Cd = 0.998; aq = 1/(Cd * pipe(k,j).A * sqrt(2*g))^2;
+        bq = pipe(k,j).B; cq = -Cp;  
+        if Cp < 0
+            pipe(k,j).QoD = (bq - sqrt(bq^2 - 4*aq*cq))/(2*aq);
+        else
+            pipe(k,j).QoD = (sqrt(bq^2 - 4*aq*cq) - bq)/(2*aq);
+        end
     end
-    %pipe(k,j).QoD
-    pipe(k,j).HoD = Cp - pipe(k,j).QoD*Bp;
-    %pipe(k,j).HoD
-    
+    pipe(k,j).HoD =  Cp - pipe(k,j).QoD*Bp;
 %---SUMMING UP --------------------------------------------
     for k = 1:8;
         for j = 1:2;
@@ -272,12 +293,17 @@ for i = 1:Nt
             pipe(k,j).Qo   = [pipe(k,j).QoU ; pipe(k,j).QoI ; pipe(k,j).QoD];
     end
             
+    end
+
 end
-    
-end
-hold off
-  plot(t(1:Nt),datH(1:Nt,1))
-  hold on
-  plot(t(1:Nt),datH(1:Nt,2))
-  plot(t(1:Nt),datH(1:Nt,3))
-  hold off
+%hold off
+%  plot(t(1:Nt),datH(1:Nt,1))
+%  hold on
+%  plot(t(1:Nt),datH(1:Nt,2))
+%  plot(t(1:Nt),datH(1:Nt,3))
+%  hold off
+dtH = datH(1:Nt,1);
+hK = datH(Nt,1);
+  
+ddH = [pipe(1,1).Ho; pipe(1,2).Ho; pipe(2,1).Ho; pipe(2,2).Ho; pipe(3,1).Ho; pipe(3,2).Ho; pipe(4,1).Ho; pipe(4,2).Ho; pipe(5,1).Ho; pipe(5,2).Ho; pipe(6,1).Ho; pipe(6,2).Ho; pipe(7,1).Ho; pipe(7,2).Ho; pipe(8,1).Ho; pipe(8,2).Ho];
+
