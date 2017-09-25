@@ -1,4 +1,4 @@
-%ss = [1 0 0]; cs = [ 0 0]; 
+%ss = [0 0 1]; cs = [0 0 0]; 
 % script_seriesPipeSolver
 function [dtH] = script_MOC(ss,cs)
 % Input parameters, basic upstream and downstream conditions
@@ -20,14 +20,16 @@ script_inputPipeProperties %Use to generate house network
 script_computePipeProperties %General code to build other values for the pipes (does not need to eb altered)
 script_computeAndInitialiseSteadyStateP %Generate starting Head and flow values (NOTE: CONTAINS HARD CODING SPECIFIC TO NETWORK)
         
-spd=1;
-sysnoise=0;%2*randn(1);
+spd=0.005;
+sysnoise=zeros(Nt,1);
+sysnoise=(2*rand(Nt,1)-1)*5;
+%plot(t(1:Nt),sysnoise(1:Nt))
 
 for i = 1:Nt
 % Store fixed situation here (e.g. closure of valve, Q=0)
 % Storing Measurements
-    datH(i,1) = pipe(1,2).Ho(10);%Head at point 1, for storing values
-    datQ(i,1) = pipe(4,1).Qo(1);%Flow at point 1, for storing values
+    datH(i,1) = pipe(1,2).Ho(250);%Head at point 1, for storing values
+    datQ(i,1) = pipe(1,2).Qo(250);%Flow at point 1, for storing values
 % Computing INTERNAL VALUES
     for k = 1:8
     for j = 1:2
@@ -52,12 +54,14 @@ for i = 1:Nt
 %                            |
 %                            8
 % UPSTREAM (SET HEAD)
-    pipe(1,1).HoU = H0(i) + sysnoise;%steady state of reservoir (upstream)head as identified above
+
+    pipe(1,1).HoU = H0(i) + sysnoise(i);%steady state of reservoir (upstream)head as identified above
     Cm = pipe(1,1).Hi(1) - pipe(1,1).Qi(1)*(pipe(1,1).B - pipe(1,1).R*abs(pipe(1,1).Qi(1)));%Calc corresponding Cm
     pipe(1,1).QoU = (H0(i) - Cm) / pipe(1,1).B; %Calc Upstream flow
 
-%~~~SERIES 1 CONNECTION----------------------------------
-    k=1; j=1;           %Indicates which pipe
+%~~~SERIES CONNECTIONS----------------------------------
+    for k=1:8           %Indicates which pipe
+        j=1;
         Ha = pipe(k,j).Hi(pipe(k,j).Nx/2); Qa = pipe(k,j).Qi(pipe(k,j).Nx/2);
         Ba = pipe(k,j).B;                Ra = pipe(k,j).R; %Upstream B and R
         Hb = pipe(k,j+1).Hi(1);          Qb = pipe(k,j+1).Qi(1); %Downstream pipe 1 properties at junction
@@ -71,6 +75,7 @@ for i = 1:Nt
         pipe(k,j).QoD   = Qnd;
         pipe(k,j+1).HoU = Hn;
         pipe(k,j+1).QoU = Qnu;
+    end
         %replace values in system
 %--------------------------------------------------------
 %---PARALLEL A CONNECTION -------------------------------     
@@ -91,28 +96,7 @@ for i = 1:Nt
         pipe(k+1,j).QoU = Qnu1;
         pipe(k+2,j).HoU = Hn;
         pipe(k+2,j).QoU = Qnu2;
-%---SERIES 2 CONNECTION ---------------------------------
-    k=2; j=1;
-        Ha = pipe(k,j).Hi(pipe(k,j).Nx/2); Qa = pipe(k,j).Qi(pipe(k,j).Nx/2);
-        Ba = pipe(k,j).B;                Ra = pipe(k,j).R;
-        Hb = pipe(k,j+1).Hi(1);          Qb = pipe(k,j+1).Qi(1);
-        Bb = pipe(k,j+1).B;              Rb = pipe(k,j+1).R;
-    [Hn Qnd Qnu] = computeMOCNodesS(Ha,Qa,Ba,Ra,Hb,Qb,Bb,Rb);
-        pipe(k,j).HoD   = Hn; 
-        pipe(k,j).QoD   = Qnd;
-        pipe(k,j+1).HoU = Hn;
-        pipe(k,j+1).QoU = Qnu;
-%---SERIES 3 CONNECTION --------------------------------
-    k=3; j=1;
-        Ha = pipe(k,j).Hi(pipe(k,j).Nx/2); Qa = pipe(k,j).Qi(pipe(k,j).Nx/2);
-        Ba = pipe(k,j).B;                Ra = pipe(k,j).R;
-        Hb = pipe(k,j+1).Hi(1);          Qb = pipe(k,j+1).Qi(1);
-        Bb = pipe(k,j+1).B;              Rb = pipe(k,j+1).R;   
-    [Hn Qnd Qnu] = computeMOCNodesS(Ha,Qa,Ba,Ra,Hb,Qb,Bb,Rb);
-        pipe(k,j).HoD   = Hn; 
-        pipe(k,j).QoD   = Qnd;
-        pipe(k,j+1).HoU = Hn;
-        pipe(k,j+1).QoU = Qnu;
+
 %-------------------------------------------------------
 %---PARALLEL B CONNECTION ------------------------------
    k = 2; j = 1;
@@ -130,24 +114,17 @@ for i = 1:Nt
         pipe(k+2,j).QoU = Qnu1;
         pipe(k+4,j).HoU = Hn;
         pipe(k+4,j).QoU = Qnu2;
-%---SERIES 4 CONNECTION -----------------------------
-    k=4; j=1;
-        Ha = pipe(k,j).Hi(pipe(k,j).Nx/2); Qa = pipe(k,j).Qi(pipe(k,j).Nx/2);
-        Ba = pipe(k,j).B;                Ra = pipe(k,j).R;
-        Hb = pipe(k,j+1).Hi(1);          Qb = pipe(k,j+1).Qi(1);
-        Bb = pipe(k,j+1).B;              Rb = pipe(k,j+1).R;
-        
-    [Hn Qnd Qnu] = computeMOCNodesS(Ha,Qa,Ba,Ra,Hb,Qb,Bb,Rb);
-        pipe(k,j).HoD   = Hn; 
-        pipe(k,j).QoD   = Qnd;
-        pipe(k,j+1).HoU = Hn;
-        pipe(k,j+1).QoU = Qnu;
+
 %---AT FIXTURE 4
-    k=4; j=2;
-    Cp = pipe(k,j).Hi(pipe(k,j).Nx/2) + pipe(k,j).Qi(pipe(k,j).Nx/2)*pipe(k,j).B;
+fixloc = [4 5 8];
+for tt=1:3
+    k=fixloc(tt);
+     j=2;
     Bp = pipe(k,j).B - pipe(k,j).R * abs(pipe(k,j).Qi(pipe(k,j).Nx/2));
-    if cs(1)<0.5    %cs=0 indicates the fixture is closed
-        pipe(k,j).QoD =max(0,((1/spd)-i)*spd* Qss(1));
+        Cp = pipe(k,j).Hi(pipe(k,j).Nx/2) + pipe(k,j).Qi(pipe(k,j).Nx/2)*pipe(k,j).B/1000;
+    if cs(tt)<0.5    %cs=0 indicates the fixture is closed
+        pipe(k,j).QoD = max(0,((1/spd)-i)*spd* Qss(1));
+        pipe(k,j).HoD = Cp ;%+ sysnoise(i);
     else            %cs=1 indicates the fixture is open
         Cd = 0.998; %note Cd is a set constant
         aq = 1/(Cd * pipe(k,j).A * sqrt(2*g))^2;% Arises from equation discussed in meetings
@@ -159,23 +136,14 @@ for i = 1:Nt
            Qmax = (sqrt(bq^2 - 4*aq*cq) - bq)/(2*aq);
         end
         pipe(k,j).QoD=min(spd*i*Qmax,Qmax);
+        pipe(k,j).HoD =  Cp - pipe(k,j).QoD*Bp + sysnoise(i);
     end
-        pipe(k,j).QoD = pipe(k,j).QoD;
-    pipe(k,j).HoD =  Cp - pipe(k,j).QoD*Bp + sysnoise;
+    
+end
+    %pipe(k,j).HoD
     %Indicates resultant flow
 
-%---SERIES 6 CONNECTION --------------------------------
-    k=6; j=1;
-        Ha = pipe(k,j).Hi(pipe(k,j).Nx/2); Qa = pipe(k,j).Qi(pipe(k,j).Nx/2);
-        Ba = pipe(k,j).B;                Ra = pipe(k,j).R;
-        Hb = pipe(k,j+1).Hi(1);          Qb = pipe(k,j+1).Qi(1);
-        Bb = pipe(k,j+1).B;              Rb = pipe(k,j+1).R;
-        
-    [Hn Qnd Qnu] = computeMOCNodesS(Ha,Qa,Ba,Ra,Hb,Qb,Bb,Rb);
-        pipe(k,j).HoD   = Hn; 
-        pipe(k,j).QoD   = Qnd;
-        pipe(k,j+1).HoU = Hn;
-        pipe(k,j+1).QoU = Qnu;
+
 %-------------------------------------------------------
 %---PARALLEL C CONNECTION ------------------------------
    k = 3; j = 1;
@@ -193,49 +161,9 @@ for i = 1:Nt
         pipe(k+2,j).QoU = Qnu1;
         pipe(k+4,j).HoU = Hn;
         pipe(k+4,j).QoU = Qnu2;
-%---SERIES 5 CONNECTION -----------------------------
-    k=5; j=1;
-        Ha = pipe(k,j).Hi(pipe(k,j).Nx/2); Qa = pipe(k,j).Qi(pipe(k,j).Nx/2);
-        Ba = pipe(k,j).B;                Ra = pipe(k,j).R; 
-        Hb = pipe(k,j+1).Hi(1);          Qb = pipe(k,j+1).Qi(1); 
-        Bb = pipe(k,j+1).B;              Rb = pipe(k,j+1).R;
-        
-    [Hn Qnd Qnu] = computeMOCNodesS(Ha,Qa,Ba,Ra,Hb,Qb,Bb,Rb);
-    pipe(k,j).HoD   = Hn; 
-        pipe(k,j).QoD   = Qnd;
-        pipe(k,j+1).HoU = Hn;
-        pipe(k,j+1).QoU = Qnu;
-%---AT FIXTURE 5
-    k=5; j=2;
-    Cp = pipe(k,j).Hi(pipe(k,j).Nx/2) + pipe(k,j).Qi(pipe(k,j).Nx/2)*pipe(k,j).B;
-    Bp = pipe(k,j).B - pipe(k,j).R * abs(pipe(k,j).Qi(pipe(k,j).Nx/2));
-    if cs(2)<0.5
-        pipe(k,j).QoD = max(0,((1/spd)-i)*spd* Qss(2));
-    else
-        Cd = 0.998; aq = 1/(Cd * pipe(k,j).A * sqrt(2*g))^2;
-        bq = pipe(k,j).B; cq = -Cp;  
-        if Cp < 0
-            Qmax = (bq - sqrt(bq^2 - 4*aq*cq))/(2*aq);
-        else
-            Qmax = (sqrt(bq^2 - 4*aq*cq) - bq)/(2*aq);
-        end
-        pipe(k,j).QoD=min(spd*i*Qmax,Qmax);
-    end
-        pipe(k,j).QoD = pipe(k,j).QoD;
-    pipe(k,j).HoD =  Cp - pipe(k,j).QoD*Bp + sysnoise;
 
-%---SERIES 7 CONNECTION --------------------------------
-    k=7; j=1;
-        Ha = pipe(k,j).Hi(pipe(k,j).Nx/2); Qa = pipe(k,j).Qi(pipe(k,j).Nx/2);
-        Ba = pipe(k,j).B;                Ra = pipe(k,j).R;
-        Hb = pipe(k,j+1).Hi(1);          Qb = pipe(k,j+1).Qi(1);
-        Bb = pipe(k,j+1).B;              Rb = pipe(k,j+1).R;
-        
-    [Hn Qnd Qnu] = computeMOCNodesS(Ha,Qa,Ba,Ra,Hb,Qb,Bb,Rb);
-        pipe(k,j).HoD   = Hn; 
-        pipe(k,j).QoD   = Qnd;
-        pipe(k,j+1).HoU = Hn;
-        pipe(k,j+1).QoU = Qnu;      
+
+    
 %------------------------------------------------------------
 %---PARALLEL D CONNECTION -----------------------------------
     k = 6; j = 1;
@@ -254,39 +182,8 @@ for i = 1:Nt
         pipe(k+1,j+1).QoD = Qnd2;
         pipe(k+2,j).HoU = Hn;
         pipe(k+2,j).QoU = Qnu;
-%---SERIES 8 CONNECTION --------------------------------
-    k=8; j=1;
-        Ha = pipe(k,j).Hi(pipe(k,j).Nx/2); Qa = pipe(k,j).Qi(pipe(k,j).Nx/2);
-        Ba = pipe(k,j).B;                Ra = pipe(k,j).R;
-        Hb = pipe(k,j+1).Hi(1);          Qb = pipe(k,j+1).Qi(1);
-        Bb = pipe(k,j+1).B;              Rb = pipe(k,j+1).R;
-        
-    [Hn Qnd Qnu] = computeMOCNodesS(Ha,Qa,Ba,Ra,Hb,Qb,Bb,Rb);
-        pipe(k,j).HoD   = Hn; 
-        pipe(k,j).QoD   = Qnd;
-        pipe(k,j+1).HoU = Hn;
-        pipe(k,j+1).QoU = Qnu;
-%-----------------------------------------------------------------        
-      % FIXTURE AT PIPE 8
-    k=8; j=2;
-    Cp = pipe(k,j).Hi(pipe(k,j).Nx/2) + pipe(k,j).Qi(pipe(k,j).Nx/2)*pipe(k,j).B;
-    Bp = pipe(k,j).B - pipe(k,j).R * abs(pipe(k,j).Qi(pipe(k,j).Nx/2));
-    if cs(3)<0.5
-        pipe(k,j).QoD = max(0,((1/spd)-i)*spd* Qss(3));
-    else
-        Cd = 0.998; aq = 1/(Cd * pipe(k,j).A * sqrt(2*g))^2;
-        bq = pipe(k,j).B; 
-        cq = -Cp;  
-        if Cp < 0
-            Qmax = (bq - sqrt(bq^2 - 4*aq*cq))/(2*aq);
-        else
-            Qmax = (sqrt(bq^2 - 4*aq*cq) - bq)/(2*aq);
-        end
-        pipe(k,j).QoD=min(spd*i*Qmax,Qmax);
-    end
-    pipe(k,j).QoD = pipe(k,j).QoD;
 
-    pipe(k,j).HoD =  Cp - pipe(k,j).QoD*Bp + sysnoise;
+
 %---SUMMING UP --------------------------------------------
     for k = 1:8
         for j = 1:2
@@ -298,5 +195,5 @@ for i = 1:Nt
 
 end
 
-%  plot(t(1:Nt),datQ(1:Nt,1));
+  plot(t(1:Nt),datH(1:Nt,1));
 dtH = datH(1:Nt,1);

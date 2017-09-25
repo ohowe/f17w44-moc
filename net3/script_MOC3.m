@@ -1,4 +1,4 @@
-%ss=[1 1 1 1 1 1 1];cs=[0 0 0 0 0 0 0];
+%ss=[0 0 0 0 0 0 0];cs=[0 0 0 0 0 1 0];
 % script_seriesPipeSolver
 function [dtH] = script_MOC3(ss,cs)
 % Input parameters, basic upstream and downstream conditions
@@ -20,13 +20,17 @@ script_inputPipeProperties3 %Use to generate house network
 script_computePipeProperties %General code to build other values for the pipes (does not need to eb altered)
 script_computeAndInitialiseSteadyStateP3 %Generate starting Head and flow values (NOTE: CONTAINS HARD CODING SPECIFIC TO NETWORK)
         
-spd=1;
-sysnoise=0;%wgn(1,1,-80);
+spd=0.005;
+noise = zeros(Nt,1);
+noise = (2*rand(Nt,1)-1)*5;
+sysnoise=zeros(Nt,1);
+%sysnoise=(2*rand(Nt,1)-1)/20;
+%plot(t(1:Nt),sysnoise(1:Nt,1))
 
 for i = 1:Nt
 % Store fixed situation here (e.g. closure of valve, Q=0)
-% Storing Measurements
-    datH(i,1) = pipe(1,2).Ho(10);%Head at point 1, for storing values
+% Storing Measurements89ty8y9ffgf
+    datH(i,1) = pipe(1,2).Ho(14);%Head at point 1, for storing values
     datQ(i,1) = pipe(1,1).Qo(1);%Flow at point 1, for storing values
 
 % Computing INTERNAL VALUES
@@ -42,9 +46,9 @@ for i = 1:Nt
 % Compute JUNCTION NODES
 % The section below is hardcoded based on the specific network
 % UPSTREAM (SET HEAD)
-    pipe(1,1).HoU = H0(i);%steady state of reservoir (upstream)head as identified above
+    pipe(1,1).HoU = H0(i)+sysnoise(i);%steady state of reservoir (upstream)head as identified above
     Cm = pipe(1,1).Hi(1) - pipe(1,1).Qi(1)*(pipe(1,1).B - pipe(1,1).R*abs(pipe(1,1).Qi(1)));%Calc corresponding Cm
-    pipe(1,1).QoU = (H0(i) - Cm) / pipe(1,1).B + sysnoise; %Calc Upstream flow
+    pipe(1,1).QoU = (H0(i) - Cm) / pipe(1,1).B; %Calc Upstream flow
 %~~~SERIES 1 CONNECTION----------------------------------
 
     for k=1:15
@@ -98,32 +102,15 @@ for i = 1:Nt
 
 
 %---AT FIXTURES
+fixloc = [2 4 6 9 11 13 15];
 for tt=1:7
-    if tt<1.5
-        k=2;
-    else if tt<2.5
-            k=4;
-        else if tt<3.5
-                k=6;
-            else if tt<4.5
-                    k=9;
-                else if tt<5.5
-                        k=11;
-                    else if tt<6.5
-                            k=13;
-                        else
-                            k=15;
-                        end
-                    end
-                end
-            end
-        end
-    end
+    k=fixloc(tt);
     j=2;
-    Cp = pipe(k,j).Hi(pipe(k,j).Nx/2) + pipe(k,j).Qi(pipe(k,j).Nx/2)*pipe(k,j).B;
+    Cp = pipe(k,j).Hi(pipe(k,j).Nx/2) + pipe(k,j).Qi(pipe(k,j).Nx/2)*pipe(k,j).B/1000;
     Bp = pipe(k,j).B - pipe(k,j).R * abs(pipe(k,j).Qi(pipe(k,j).Nx/2));
     if cs(tt)<0.5    %cs=0 indicates the fixture is closed
-        pipe(k,j).QoD = max(0,((1/spd)-i)*spd* Qss(tt)) + sysnoise;
+        pipe(k,j).QoD = max(0,((1/spd)-i)*spd* Qss(tt));
+        pipe(k,j).HoD = Cp+sysnoise(i);
     else            %cs=1 indicates the fixture is open
         Cd = 0.998; %note Cd is a set constant
         aq = 1/(Cd * pipe(k,j).A * sqrt(2*g))^2;% Arises from equation discussed in meetings
@@ -134,12 +121,15 @@ for tt=1:7
         else
             Qmax = (sqrt(bq^2 - 4*aq*cq) - bq)/(2*aq);
         end
-    pipe(k,j).QoD = min(spd*i*Qmax,Qmax);  
+    pipe(k,j).QoD = min(spd*i*Qmax,Qmax);
+        pipe(k,j).HoD =  Cp - pipe(k,j).QoD*Bp + sysnoise(i);
+    %pipe(k,j).QoD
     end
-    pipe(k,j).QoD = pipe(k,j).QoD + sysnoise;
-    pipe(k,j).HoD =  Cp - pipe(k,j).QoD*Bp;
+       % pipe(k,j).HoD =  Cp - pipe(k,j).QoD*Bp;
+    end
+
          %pipe(k,j).HoD
-end
+
     %Indicates resultant flow
 
 %--------------------------------------------------------
@@ -196,6 +186,7 @@ k = 7; j = 1;
     end
 
 end
+
   plot(t(1:Nt),datH(1:Nt,1))
-dtH = datH(1:Nt,1);
+dtH = datH(1:Nt,1) + noise;
 % end

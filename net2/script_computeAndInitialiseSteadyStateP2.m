@@ -33,7 +33,7 @@ lossCoeff(7,2) = lossCoeff(7,1) + lossCoeff(7,2);
 lgg(3)=lossCoeff(7,2);
 lossCoeff(8,1) = lossCoeff(6,2) + lossCoeff(8,1);
 lossCoeff(8,2) = lossCoeff(8,1) + lossCoeff(8,2);
-lgg(4)=lossCoeff(8,2)*15;
+lgg(4)=lossCoeff(8,2);
 lossCoeff(9,1) = lossCoeff(6,2) + lossCoeff(9,1);
 lossCoeff(9,2) = lossCoeff(9,1) + lossCoeff(9,2);
 lossCoeff(10,1) = lossCoeff(5,2) + lossCoeff(10,1);
@@ -51,14 +51,14 @@ lossCoeff(14,2) = lossCoeff(14,1) + lossCoeff(14,2);
 lgg(7)=lossCoeff(14,2);
 lossCoeff(15,1) = lossCoeff(12,2) + lossCoeff(15,1);
 lossCoeff(15,2) = lossCoeff(15,1) + lossCoeff(15,2);
-lgg(8)=lossCoeff(15,2)*20;
+lgg(8)=lossCoeff(15,2);
 
 Qss = zeros(8,1);%Flow at steady state (vector size is number of downstream fixture points)
 %determines the steady state flow at each fixture (0 if closed and
 %according to equation below if open)
 for i=1:8
     if ss(i)>=0.5 %(ss(i)=0 then fixture starts clkosed if ss(i)=1 then open) 
-        Qss(i)=sqrt(2 * g * (H0SS - 24.9) / (lgg(i)));
+        Qss(i)=sqrt(2 * g * (H0SS - 05) / (lgg(i)));
     else
         Qss(i)=0;
     end
@@ -133,7 +133,7 @@ pipe(13,2).Qo = (Qss(6)) * ones(pipe(13,2).Nx/2+1,1);
 pipe(13,2).Ho = pipe(13,1).Ho(pipe(13,1).Nx/2+1) - [0:pipe(13,2).Nx/2]' * 2 * pipe(13,2).R * (Qss(6)) ^ 2;
 
 pipe(14,1).Qo = (Qss(7)) * ones(pipe(14,1).Nx/2+1,1);
-pipe(14,1).Ho = pipe(12,2).Ho(pipe(12,2).Nx/2+1) - [0:pipe(13,1).Nx/2]' * 2 * pipe(13,1).R * (Qss(7)) ^ 2;
+pipe(14,1).Ho = pipe(12,2).Ho(pipe(12,2).Nx/2+1) - [0:pipe(14,1).Nx/2]' * 2 * pipe(14,1).R * (Qss(7)) ^ 2;
 pipe(14,2).Qo = (Qss(7)) * ones(pipe(14,2).Nx/2+1,1);
 pipe(14,2).Ho = pipe(14,1).Ho(pipe(14,1).Nx/2+1) - [0:pipe(14,2).Nx/2]' * 2 * pipe(14,2).R * (Qss(7)) ^ 2;
 

@@ -1,25 +1,23 @@
 %Analysis
-
+%sSEND THROUGH JUNCTION NOTES!!!!!!
 cc=2;
 event=0;
-ssr=zeros(6,6);
-while cc<110000
-    if abs(totH(cc)-totH(cc-1))>0.001
+ssr=zeros(14,14);
+while cc<280000
+    if abs(totH(cc)-totH(cc-1))>0.01
         event=event+1;
-        diff = zeros(10000,6);
+        diff = zeros(10000,1);
 
         %ssr = zeros(6,event);
         %data = totH((cc-1):(cc-2)+10000);
-        for i=1:6
+        for i=1:14
             for j=1:size(fix(i).event)
                 data = totH((cc-1):(cc-1)+size(fix(i).event));
-                diff(j,i)=(fix(i).event(j)-data(j))^2;
-
+                diff(j)=(fix(i).event(j)-data(j))^2;
             end
-            ssr(i,event)=sum(diff(:,i));
+            ssr(i,event)=sum(diff);
         end
-        cc
-        cc=cc+10001;
+        cc=cc+10000;
     else
         cc=cc+1;
     end

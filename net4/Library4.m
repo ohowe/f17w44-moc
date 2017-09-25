@@ -9,57 +9,57 @@ for k=1:22
 end
 detHead = zeros(10000,22);
 %fixture 1 open
-[fix(1).event] = script_MOC2([0 0 0 0 0 0 0 0 0 0 0],[1 0 0 0 0 0 0 0 0 0 0]);
+[fix(1).event] = script_MOC4([0 0 0 0 0 0 0 0 0 0 0],[1 0 0 0 0 0 0 0 0 0 0]);
 %fixture 1 close
-[fix(2).event] = script_MOC2([1 0 0 0 0 0 0 0 0 0 0],[0 0 0 0 0 0 0 0 0 0 0]);
+[fix(2).event] = script_MOC4([1 0 0 0 0 0 0 0 0 0 0],[0 0 0 0 0 0 0 0 0 0 0]);
 %fixture 2 open
-[fix(3).event] = script_MOC2([0 0 0 0 0 0 0 0 0 0 0],[0 1 0 0 0 0 0 0 0 0 0]);
+[fix(3).event] = script_MOC4([0 0 0 0 0 0 0 0 0 0 0],[0 1 0 0 0 0 0 0 0 0 0]);
 %fixture 2 close
-[fix(4).event] = script_MOC2([0 1 0 0 0 0 0 0 0 0 0],[0 0 0 0 0 0 0 0 0 0 0]);
+[fix(4).event] = script_MOC4([0 1 0 0 0 0 0 0 0 0 0],[0 0 0 0 0 0 0 0 0 0 0]);
 %fixture 3 open
-[fix(5).event] = script_MOC2([0 0 0 0 0 0 0 0 0 0 0],[0 0 1 0 0 0 0 0 0 0 0]);
+[fix(5).event] = script_MOC4([0 0 0 0 0 0 0 0 0 0 0],[0 0 1 0 0 0 0 0 0 0 0]);
 %fixture 3 close
-[fix(6).event] = script_MOC2([0 0 1 0 0 0 0 0 0 0 0],[0 0 0 0 0 0 0 0 0 0 0]);
+[fix(6).event] = script_MOC4([0 0 1 0 0 0 0 0 0 0 0],[0 0 0 0 0 0 0 0 0 0 0]);
 %fixture 4 open
-[fix(7).event] = script_MOC2([0 0 0 0 0 0 0 0 0 0 0],[0 0 0 1 0 0 0 0 0 0 0]);
+[fix(7).event] = script_MOC4([0 0 0 0 0 0 0 0 0 0 0],[0 0 0 1 0 0 0 0 0 0 0]);
 %fixture 4 close
-[fix(8).event] = script_MOC2([0 0 0 1 0 0 0 0 0 0 0],[0 0 0 0 0 0 0 0 0 0 0]);
+[fix(8).event] = script_MOC4([0 0 0 1 0 0 0 0 0 0 0],[0 0 0 0 0 0 0 0 0 0 0]);
 %fixture 5 open
-[fix(9).event] = script_MOC2([0 0 0 0 0 0 0 0 0 0 0],[0 0 0 0 1 0 0 0 0 0 0]);
+[fix(9).event] = script_MOC4([0 0 0 0 0 0 0 0 0 0 0],[0 0 0 0 1 0 0 0 0 0 0]);
 %fixture 5 close
-[fix(10).event] = script_MOC2([0 0 0 0 1 0 0 0 0 0 0],[0 0 0 0 0 0 0 0 0 0 0]);
+[fix(10).event] = script_MOC4([0 0 0 0 1 0 0 0 0 0 0],[0 0 0 0 0 0 0 0 0 0 0]);
 %fixture 6 open
-[fix(11).event] = script_MOC2([0 0 0 0 0 0 0 0 0 0 0],[0 0 0 0 0 1 0 0 0 0 0]);
+[fix(11).event] = script_MOC4([0 0 0 0 0 0 0 0 0 0 0],[0 0 0 0 0 1 0 0 0 0 0]);
 %fixture 6 close
-[fix(12).event] = script_MOC2([0 0 0 0 0 1 0 0 0 0 0],[0 0 0 0 0 0 0 0 0 0 0]);
+[fix(12).event] = script_MOC4([0 0 0 0 0 1 0 0 0 0 0],[0 0 0 0 0 0 0 0 0 0 0]);
 %fixture 7 open
-[fix(13).event] = script_MOC2([0 0 0 0 0 0 0 0 0 0 0],[0 0 0 0 0 0 1 0 0 0 0]);
+[fix(13).event] = script_MOC4([0 0 0 0 0 0 0 0 0 0 0],[0 0 0 0 0 0 1 0 0 0 0]);
 %fixture 7 close
-[fix(14).event] = script_MOC2([0 0 0 0 0 0 1 0 0 0 0],[0 0 0 0 0 0 0 0 0 0 0]);
+[fix(14).event] = script_MOC4([0 0 0 0 0 0 1 0 0 0 0],[0 0 0 0 0 0 0 0 0 0 0]);
 %fixture 8 open
-[fix(15).event] = script_MOC2([0 0 0 0 0 0 0 0 0 0 0],[0 0 0 0 0 0 0 1 0 0 0]);
+[fix(15).event] = script_MOC4([0 0 0 0 0 0 0 0 0 0 0],[0 0 0 0 0 0 0 1 0 0 0]);
 %fixture 8 close
-[fix(16).event] = script_MOC2([0 0 0 0 0 0 0 1 0 0 0],[0 0 0 0 0 0 0 0 0 0 0]);
+[fix(16).event] = script_MOC4([0 0 0 0 0 0 0 1 0 0 0],[0 0 0 0 0 0 0 0 0 0 0]);
 %fixture 9 open
-[fix(17).event] = script_MOC2([0 0 0 0 0 0 0 0 0 0 0],[0 0 0 0 0 0 0 0 1 0 0]);
+[fix(17).event] = script_MOC4([0 0 0 0 0 0 0 0 0 0 0],[0 0 0 0 0 0 0 0 1 0 0]);
 %fixture 9 close
-[fix(18).event] = script_MOC2([0 0 0 0 0 0 0 0 1 0 0],[0 0 0 0 0 0 0 0 0 0 0]);
+[fix(18).event] = script_MOC4([0 0 0 0 0 0 0 0 1 0 0],[0 0 0 0 0 0 0 0 0 0 0]);
 %fixture 10 open
-[fix(19).event] = script_MOC2([0 0 0 0 0 0 0 0 0 0 0],[0 0 0 0 0 0 0 0 0 1 0]);
+[fix(19).event] = script_MOC4([0 0 0 0 0 0 0 0 0 0 0],[0 0 0 0 0 0 0 0 0 1 0]);
 %fixture 10 close
-[fix(20).event] = script_MOC2([0 0 0 0 0 0 0 0 0 1 0],[0 0 0 0 0 0 0 0 0 0 0]);
+[fix(20).event] = script_MOC4([0 0 0 0 0 0 0 0 0 1 0],[0 0 0 0 0 0 0 0 0 0 0]);
 %fixture 11 open
-[fix(21).event] = script_MOC2([0 0 0 0 0 0 0 0 0 0 0],[0 0 0 0 0 0 0 0 0 0 1]);
+[fix(21).event] = script_MOC4([0 0 0 0 0 0 0 0 0 0 0],[0 0 0 0 0 0 0 0 0 0 1]);
 %fixture 11 close
-[fix(22).event] = script_MOC2([0 0 0 0 0 0 0 0 0 0 1],[0 0 0 0 0 0 0 0 0 0 0]);
+[fix(22).event] = script_MOC4([0 0 0 0 0 0 0 0 0 0 1],[0 0 0 0 0 0 0 0 0 0 0]);
 
-for k=1:22
-    for i=1:10000
-    if abs(fix(k).event(i+1)-fix(k).event(i))>0.001
-        fix(k).event(1:i+1)=[];
-        break
-    end
-    end
-end
+%for k=1:22
+%    for i=1:10000
+%    if abs(fix(k).event(i+1)-fix(k).event(i))>0.001
+%        fix(k).event(1:i+1)=[];
+%        break
+%    end
+%    end
+%end
 
 

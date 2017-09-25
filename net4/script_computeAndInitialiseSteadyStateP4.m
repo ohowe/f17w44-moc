@@ -75,9 +75,9 @@ lgg(11)=lossCoeff(23,2);
 Qss = zeros(11,1);%Flow at steady state (vector size is number of downstream fixture points)
 %determines the steady state flow at each fixture (0 if closed and
 %according to equation below if open)
-for i=1:8
+for i=1:11
     if ss(i)>=0.5 %(ss(i)=0 then fixture starts clkosed if ss(i)=1 then open) 
-        Qss(i)=sqrt(2 * g * (H0SS - 24.9) / (lgg(i)));
+        Qss(i)=sqrt(2 * g * (H0SS - 0.1) / (lgg(i)));
     else
         Qss(i)=0;
     end

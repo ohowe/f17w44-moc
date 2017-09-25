@@ -9,7 +9,7 @@ end
 
 %generate measured signal
 [meas] = script_MOC2([0 0 0 0 0 0 0 0],[1 0 0 0 0 0 0 0]);
-noise =randn(n);
+noise = zeros(10000,1);%(2*rand(10000,1)-1)/10;
 meas = noise + meas;
 totH(1:10000) = meas;
 
@@ -74,4 +74,4 @@ totH(280001:290000) = meas15;
 meas16=noise + meas16;
 totH(300001:310000) = meas16;
 
-plot(totT,totH);
+plot(totT,totH)

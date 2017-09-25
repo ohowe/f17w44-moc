@@ -3,13 +3,15 @@
 totH = 25*ones(120000,1);
 totT = ones(120000,1);
 
+noise=zeros(10000,1);
+%noise = (2*rand(10000,1)-1)*5;
+
 for i=2:size(totT)
     totT(i) = totT(i)+totT(i-1);
 end
 
 %generate measured signal
 [meas] = script_MOC([0 0 0],[1 0 0]);
-noise = 1*rand(10000,1);
 meas = noise + meas;
 totH(1:10000) = meas;
 

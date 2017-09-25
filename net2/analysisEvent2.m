@@ -7,6 +7,7 @@ while cc<320000
     if abs(totH(cc)-totH(cc-1))>0.01
         event=event+1;
         diff = zeros(10000,1);
+        
 
         %ssr = zeros(6,event);
         %data = totH((cc-1):(cc-2)+10000);
@@ -17,7 +18,9 @@ while cc<320000
             end
             ssr(i,event)=sum(diff);
         end
+        cc
         cc=cc+10000;
+        
     else
         cc=cc+1;
     end

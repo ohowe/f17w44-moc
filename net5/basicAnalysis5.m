@@ -1,11 +1,11 @@
 %basicAnalysis
 
 diff = zeros(10000,1);
-ssr = zeros(14,14);
+ssr = zeros(12,12);
 
-for c=1:14
+for c=1:12
     cc=c*20000-20000;
-    for i=1:14
+    for i=1:12
         for j=1:10000
             diff(j)=(totH(cc+j)-fix(i).event(j))^2;
         end

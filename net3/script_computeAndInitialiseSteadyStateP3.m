@@ -18,46 +18,46 @@ lgg=zeros(7,1); %vector for loss coeficients at each fixture
 lossCoeff(1,2) = lossCoeff(1,1) + lossCoeff(1,2);
 lossCoeff(2,1) = lossCoeff(1,2) + lossCoeff(2,1);
 lossCoeff(2,2) = lossCoeff(2,1) + lossCoeff(2,2);
-lgg(1) = lossCoeff(2,2)/2;
+lgg(1) = lossCoeff(2,2);
 lossCoeff(3,1) = lossCoeff(1,2) + lossCoeff(3,1);
 lossCoeff(3,2) = lossCoeff(3,1) + lossCoeff(3,2);
 lossCoeff(4,1) = lossCoeff(3,2) + lossCoeff(4,1);
 lossCoeff(4,2) = lossCoeff(4,1) + lossCoeff(4,2);
-lgg(2)=lossCoeff(4,2)*2;  %loss coefficient at fixture 4
+lgg(2)=lossCoeff(4,2);  %loss coefficient at fixture 4
 lossCoeff(5,1) = lossCoeff(3,2) + lossCoeff(5,1);
 lossCoeff(5,2) = lossCoeff(5,1) + lossCoeff(5,2);
 lossCoeff(6,1) = lossCoeff(5,2) + lossCoeff(6,1);
 lossCoeff(6,2) = lossCoeff(6,1) + lossCoeff(6,2);
-lgg(3) = lossCoeff(6,2)*10;
+lgg(3) = lossCoeff(6,2);
 lossCoeff(7,1) = lossCoeff(5,2) + lossCoeff(7,1);
 lossCoeff(7,2) = lossCoeff(7,1) + lossCoeff(7,2);
 lossCoeff(8,1) = lossCoeff(7,2) + lossCoeff(8,1);
 lossCoeff(8,2) = lossCoeff(8,1) + lossCoeff(8,2);
 lossCoeff(9,1) = lossCoeff(6,2) + lossCoeff(9,1);
 lossCoeff(9,2) = lossCoeff(9,1) + lossCoeff(9,2);
-lgg(4) = lossCoeff(9,2)/4;
+lgg(4) = lossCoeff(9,2);
 lossCoeff(10,1) = lossCoeff(8,2) + lossCoeff(10,1);
 lossCoeff(10,2) = lossCoeff(10,1) + lossCoeff(10,2);
 lossCoeff(11,1) = lossCoeff(10,2) + lossCoeff(11,1);
 lossCoeff(11,2) = lossCoeff(11,1) + lossCoeff(11,2);
-lgg(5)=lossCoeff(11,2)/2;
+lgg(5)=lossCoeff(11,2);
 lossCoeff(12,1) = lossCoeff(7,2) + lossCoeff(12,1);
 lossCoeff(12,2) = lossCoeff(12,1) + lossCoeff(12,2);
 lossCoeff(13,1) = lossCoeff(12,2) + lossCoeff(13,1);
 lossCoeff(13,2) = lossCoeff(13,1) + lossCoeff(13,2);
-lgg(6)=lossCoeff(13,2)*5;
+lgg(6)=lossCoeff(13,2);
 lossCoeff(14,1) = lossCoeff(12,2) + lossCoeff(14,1);
 lossCoeff(14,2) = lossCoeff(14,1) + lossCoeff(14,2);
 lossCoeff(15,1) = lossCoeff(14,2) + lossCoeff(15,1);
 lossCoeff(15,2) = lossCoeff(15,1) + lossCoeff(15,2);
-lgg(7)=lossCoeff(15,2)*10;
+lgg(7)=lossCoeff(15,2);
 
 Qss = zeros(7,1);%Flow at steady state (vector size is number of downstream fixture points)
 %determines the steady state flow at each fixture (0 if closed and
 %according to equation below if open)
 for i=1:7
     if ss(i)>=0.5 %(ss(i)=0 then fixture starts clkosed if ss(i)=1 then open) 
-        Qss(i)=sqrt(2 * g * (H0SS - 24.9) / (lgg(i)));
+        Qss(i)=sqrt(2 * g * (H0SS - 5) / (lgg(i)));
     else
         Qss(i)=0;
     end

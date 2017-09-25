@@ -38,13 +38,13 @@ end
 [fix(14).event] = script_MOC3([0 0 0 0 0 0 1],[0 0 0 0 0 0 0]);
 
 
-for k=1:14
-    for i=1:10000
-    if abs(fix(k).event(i+1)-fix(k).event(i))>0.001
-        fix(k).event(1:i+1)=[];
-        break
-    end
-    end
-end
+%for k=1:14
+%    for i=1:10000
+%    if abs(fix(k).event(i+1)-fix(k).event(i))>0.001
+%        fix(k).event(1:i+1)=[];
+%        break
+%    end
+%    end
+%end
 
 
