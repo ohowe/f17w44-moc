@@ -9,33 +9,33 @@ for k=1:14
 end
 detHead = zeros(10000,14);
 %fixture 1 open
-[fix(1).event] = script_MOC2([0 0 0 0 0 0 0],[1 0 0 0 0 0 0]);
+[fix(1).event] = script_MOC6([0 0 0 0 0 0 0],[1 0 0 0 0 0 0]);
 %fixture 1 close
-[fix(2).event] = script_MOC2([1 0 0 0 0 0 0],[0 0 0 0 0 0 0]);
+[fix(2).event] = script_MOC6([1 0 0 0 0 0 0],[0 0 0 0 0 0 0]);
 %fixture 2 open
-[fix(3).event] = script_MOC2([0 0 0 0 0 0 0],[0 1 0 0 0 0 0]);
+[fix(3).event] = script_MOC6([0 0 0 0 0 0 0],[0 1 0 0 0 0 0]);
 %fixture 2 close
-[fix(4).event] = script_MOC2([0 1 0 0 0 0 0],[0 0 0 0 0 0 0]);
+[fix(4).event] = script_MOC6([0 1 0 0 0 0 0],[0 0 0 0 0 0 0]);
 %fixture 3 open
-[fix(5).event] = script_MOC2([0 0 0 0 0 0 0],[0 0 1 0 0 0 0]);
+[fix(5).event] = script_MOC6([0 0 0 0 0 0 0],[0 0 1 0 0 0 0]);
 %fixture 3 close
-[fix(6).event] = script_MOC2([0 0 1 0 0 0 0],[0 0 0 0 0 0 0]);
+[fix(6).event] = script_MOC6([0 0 1 0 0 0 0],[0 0 0 0 0 0 0]);
 %fixture 4 open
-[fix(7).event] = script_MOC2([0 0 0 0 0 0 0],[0 0 0 1 0 0 0]);
+[fix(7).event] = script_MOC6([0 0 0 0 0 0 0],[0 0 0 1 0 0 0]);
 %fixture 4 close
-[fix(8).event] = script_MOC2([0 0 0 1 0 0 0],[0 0 0 0 0 0 0]);
+[fix(8).event] = script_MOC6([0 0 0 1 0 0 0],[0 0 0 0 0 0 0]);
 %fixture 5 open
-[fix(9).event] = script_MOC2([0 0 0 0 0 0 0],[0 0 0 0 1 0 0]);
+[fix(9).event] = script_MOC6([0 0 0 0 0 0 0],[0 0 0 0 1 0 0]);
 %fixture 5 close
-[fix(10).event] = script_MOC2([0 0 0 0 1 0 0],[0 0 0 0 0 0 0]);
+[fix(10).event] = script_MOC6([0 0 0 0 1 0 0],[0 0 0 0 0 0 0]);
 %fixture 6 open
-[fix(11).event] = script_MOC2([0 0 0 0 0 0 0],[0 0 0 0 0 1 0]);
+[fix(11).event] = script_MOC6([0 0 0 0 0 0 0],[0 0 0 0 0 1 0]);
 %fixture 6 close
-[fix(12).event] = script_MOC2([0 0 0 0 0 1 0],[0 0 0 0 0 0 0]);
+[fix(12).event] = script_MOC6([0 0 0 0 0 1 0],[0 0 0 0 0 0 0]);
 %fixture 7 open
-[fix(13).event] = script_MOC2([0 0 0 0 0 0 0],[0 0 0 0 0 0 1]);
+[fix(13).event] = script_MOC6([0 0 0 0 0 0 0],[0 0 0 0 0 0 1]);
 %fixture 7 close
-[fix(14).event] = script_MOC2([0 0 0 0 0 0 1],[0 0 0 0 0 0 0]);
+[fix(14).event] = script_MOC6([0 0 0 0 0 0 1],[0 0 0 0 0 0 0]);
 
 
 

@@ -21,7 +21,10 @@ script_computePipeProperties %General code to build other values for the pipes (
 script_computeAndInitialiseSteadyStateP5 %Generate starting Head and flow values (NOTE: CONTAINS HARD CODING SPECIFIC TO NETWORK)
         
 spd=1;
-sysnoise=zeros(Nt,1);%randn(1);
+noise = zeros(Nt,1);
+%noise = (2*rand(Nt,1)-1);
+sysnoise=zeros(Nt,1);
+%sysnoise=(2*randn(Nt,1)-1)*0.2;
 
 for i = 1:Nt
 % Store fixed situation here (e.g. closure of valve, Q=0)
@@ -195,5 +198,5 @@ end
 end
 
   plot(t(1:Nt),datH(1:Nt,1))
-dtH = datH(1:Nt,1);
+dtH = datH(1:Nt,1)+noise;
 % end

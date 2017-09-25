@@ -21,7 +21,10 @@ script_computePipeProperties %General code to build other values for the pipes (
 script_computeAndInitialiseSteadyStateP6 %Generate starting Head and flow values (NOTE: CONTAINS HARD CODING SPECIFIC TO NETWORK)
         
 spd=1;
-sysnoise=0;%randn(1);
+noise=zeros(Nt,1);
+%noise=(2*rand(Nt,1)-1);
+sysnoise=zeros(Nt,1);
+%sysnoise=(2*rand(Nt,1)-1)*0.2;
 
 for i = 1:Nt
     %i
@@ -43,7 +46,7 @@ for i = 1:Nt
 % Compute JUNCTION NODES
 % The section below is hardcoded based on the specific network
 % UPSTREAM (SET HEAD)
-    pipe(1,1).HoU = H0(i) + sysnoise;%steady state of reservoir (upstream)head as identified above
+    pipe(1,1).HoU = H0(i) + sysnoise(i);%steady state of reservoir (upstream)head as identified above
     Cm = pipe(1,1).Hi(1) - pipe(1,1).Qi(1)*(pipe(1,1).B - pipe(1,1).R*abs(pipe(1,1).Qi(1)));%Calc corresponding Cm
     pipe(1,1).QoU = (H0(i) - Cm) / pipe(1,1).B; %Calc Upstream flow
 %~~~SERIES 1 CONNECTION----------------------------------
@@ -77,7 +80,7 @@ for tt=1:7
     Bp = pipe(k,j).B - pipe(k,j).R * abs(pipe(k,j).Qi(pipe(k,j).Nx/2));
     if cs(tt)<0.5    %cs=0 indicates the fixture is closed
         pipe(k,j).QoD = max(0,((1/spd)-i)*spd* Qss(tt));
-        pipe(k,j).HoD = Cp + sysnoise;
+        pipe(k,j).HoD = Cp + sysnoise(i);
     else            %cs=1 indicates the fixture is open
         Cd = 0.998; %note Cd is a set constant
         aq = 1/(Cd * pipe(k,j).A * sqrt(2*g))^2;% Arises from equation discussed in meetings
@@ -90,7 +93,7 @@ for tt=1:7
         end
         %Qmax
     pipe(k,j).QoD = min(spd*i*Qmax,Qmax);
-    pipe(k,j).HoD =  Cp - pipe(k,j).QoD*Bp + sysnoise;
+    pipe(k,j).HoD =  Cp - pipe(k,j).QoD*Bp + sysnoise(i);
     end
 
 end
@@ -197,5 +200,5 @@ k = 2; j = 1;
 end
 
  plot(t(1:Nt),datH(1:Nt,1))
-dtH = datH(1:Nt,1);
+dtH = datH(1:Nt,1)+noise;
 % end
