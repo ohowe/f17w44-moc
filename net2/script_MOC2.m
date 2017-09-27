@@ -1,4 +1,4 @@
-%ss=[0 0 0 0 0 0 0 0];cs=[0 0 0 0 1 0 0 0];
+%ss=[1 0 0 0 0 0 0 0];cs=[0 0 0 0 0 0 0 0];
 % script_seriesPipeSolver
 function [dtH] = script_MOC2(ss,cs)
 % Input parameters, basic upstream and downstream conditions
@@ -20,9 +20,9 @@ script_inputPipeProperties2 %Use to generate house network
 script_computePipeProperties %General code to build other values for the pipes (does not need to eb altered)
 script_computeAndInitialiseSteadyStateP2 %Generate starting Head and flow values (NOTE: CONTAINS HARD CODING SPECIFIC TO NETWORK)
         
-spd=0.005;
+spd=1;
 noise = zeros(Nt,1);
-noise = (2*rand(Nt,1)-1);
+%noise = (2*rand(Nt,1)-1);
 sysnoise=zeros(Nt,1);
 %sysnoise=(2*rand(Nt,1)-1)*2;
 
@@ -30,7 +30,7 @@ for i = 1:Nt
     %i
 % Store fixed situation here (e.g. closure of valve, Q=0)
 % Storing Measurements
-    datH(i,1) = pipe(1,2).Ho(10);%Head at point 1, for storing values
+    datH(i,1) = pipe(1,2).Ho(20);%Head at point 1, for storing values
     datQ(i,1) = pipe(1,1).Qo(1);%Flow at point 1, for storing values
 
 % Computing INTERNAL VALUES
@@ -77,7 +77,7 @@ fixloc = [3 4 7 8 11 13 14 15];
 for tt=1:8
     k=fixloc(tt);
     j=2;
-    Cp = pipe(k,j).Hi(pipe(k,j).Nx/2) + pipe(k,j).Qi(pipe(k,j).Nx/2)*pipe(k,j).B/1000;
+    Cp = pipe(k,j).Hi(pipe(k,j).Nx/2) + pipe(k,j).Qi(pipe(k,j).Nx/2)*pipe(k,j).B;
     Bp = pipe(k,j).B - pipe(k,j).R * abs(pipe(k,j).Qi(pipe(k,j).Nx/2));
     if cs(tt)<0.5    %cs=0 indicates the fixture is closed
         pipe(k,j).QoD = max(0,((1/spd)-i)*spd* Qss(tt));
