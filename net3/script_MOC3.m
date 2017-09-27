@@ -1,6 +1,6 @@
-%ss=[0 0 0 0 0 0 0];cs=[0 0 0 0 0 1 0];
+%ss=[0 0 1 0 0 0 0];cs=[0 0 0 0 0 0 0];
 % script_seriesPipeSolver
-function [dtH] = script_MOC3(ss,cs)
+function [dtH resH] = script_MOC3(ss,cs)
 % Input parameters, basic upstream and downstream conditions
 %See MOC description froom Water III for further understanding
 g = 9.81;%gravitational acceleration
@@ -22,7 +22,7 @@ script_computeAndInitialiseSteadyStateP3 %Generate starting Head and flow values
         
 spd=0.005;
 noise = zeros(Nt,1);
-noise = (2*rand(Nt,1)-1)*5;
+%noise = (2*rand(Nt,1)-1)*5;
 sysnoise=zeros(Nt,1);
 %sysnoise=(2*rand(Nt,1)-1)/20;
 %plot(t(1:Nt),sysnoise(1:Nt,1))
@@ -30,8 +30,8 @@ sysnoise=zeros(Nt,1);
 for i = 1:Nt
 % Store fixed situation here (e.g. closure of valve, Q=0)
 % Storing Measurements89ty8y9ffgf
-    datH(i,1) = pipe(1,2).Ho(14);%Head at point 1, for storing values
-    datQ(i,1) = pipe(1,1).Qo(1);%Flow at point 1, for storing values
+    datH(i,1) = pipe(1,2).Ho(50);%Head at point 1, for storing values
+    datQ(i,1) = pipe(1,2).Qo(30);%Flow at point 1, for storing values
 
 % Computing INTERNAL VALUES
     for k = 1:15
@@ -106,7 +106,7 @@ fixloc = [2 4 6 9 11 13 15];
 for tt=1:7
     k=fixloc(tt);
     j=2;
-    Cp = pipe(k,j).Hi(pipe(k,j).Nx/2) + pipe(k,j).Qi(pipe(k,j).Nx/2)*pipe(k,j).B/1000;
+    Cp = pipe(k,j).Hi(pipe(k,j).Nx/2) + pipe(k,j).Qi(pipe(k,j).Nx/2)*pipe(k,j).B;
     Bp = pipe(k,j).B - pipe(k,j).R * abs(pipe(k,j).Qi(pipe(k,j).Nx/2));
     if cs(tt)<0.5    %cs=0 indicates the fixture is closed
         pipe(k,j).QoD = max(0,((1/spd)-i)*spd* Qss(tt));
@@ -188,5 +188,10 @@ k = 7; j = 1;
 end
 
   plot(t(1:Nt),datH(1:Nt,1))
+
 dtH = datH(1:Nt,1) + noise;
-% end
+if sum(cs)>0
+    resH = datH(Nt,1);
+else
+    resH = H0(Nt);
+end
