@@ -12,7 +12,11 @@ while cc<240000
         %data = totH((cc-1):(cc-2)+10000);
         for i=1:22
             for j=1:size(fix(i).event)
-                data = totH((cc-1):(cc-1)+size(fix(i).event));
+                if 10000-62-size(fix(i).event,1)<0
+                    data = totH((cc-1):(cc-1)+size(fix(i).event));
+                else
+                    data = totH((cc-1)+10000-62-size(fix(i).event,1):(cc-1)+10000-62);
+                end
                 diff(j)=(fix(i).event(j)-data(j))^2;
             end
             ssr(i,event)=sum(diff);

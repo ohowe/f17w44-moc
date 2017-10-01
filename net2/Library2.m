@@ -42,13 +42,13 @@ detHead = zeros(10000,16);
 [fix(16).event] = script_MOC2([0 0 0 0 0 0 0 1],[0 0 0 0 0 0 0 0]);
 
 
-%for k=1:16
-%    for i=1:9999
-%    if abs(fix(k).event(i+1)-fix(k).event(i))>0.001
-%        fix(k).event(1:i+1)=[];
-%        break
-%    end
-%    end
-%end
+for k=1:16
+    for i=1:9999
+    if abs(fix(k).event(i+1)-fix(k).event(i))>0.001
+        fix(k).event(1:i+1)=[];
+        break
+    end
+    end
+end
 
 

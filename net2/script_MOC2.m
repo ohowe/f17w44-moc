@@ -1,4 +1,4 @@
-%ss=[1 0 0 0 0 0 0 0];cs=[0 0 0 0 0 0 0 0];
+%ss=[0 0 0 0 0 0 0 0];cs=[0 0 0 0 0 0 0 0];
 % script_seriesPipeSolver
 function [dtH] = script_MOC2(ss,cs)
 % Input parameters, basic upstream and downstream conditions
@@ -24,7 +24,7 @@ spd=1;
 noise = zeros(Nt,1);
 %noise = (2*rand(Nt,1)-1);
 sysnoise=zeros(Nt,1);
-%sysnoise=(2*rand(Nt,1)-1)*2;
+%sysnoise=(2*rand(Nt,1)-1)*0.1;
 
 for i = 1:Nt
     %i
@@ -244,3 +244,9 @@ end
   plot(t(1:Nt),datH(1:Nt,1))
 dtH = datH(1:Nt,1) + noise;
 % end
+for noisecc=2:10000
+    if (datH(noisecc)-datH(noisecc-1))>0.1
+        noisecc
+        break
+    end
+end

@@ -22,8 +22,8 @@ detHead = zeros(10000,6);
 [fix(6).event] = script_MOC([0 0 1],[0 0 0]);
 
 for k=1:6
-    for i=1:10000
-    if abs(fix(k).event(i+1)-fix(k).event(i))>0.001
+    for i=1:9999
+    if abs(fix(k).event(i+1)-fix(k).event(i))>0.002
         fix(k).event(1:i+1)=[];
         fix(k).len=size(fix(k).event);
         break

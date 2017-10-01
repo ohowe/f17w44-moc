@@ -4,7 +4,7 @@ cc=2;
 event=0;
 ssr=zeros(14,14);
 while cc<280000
-    if abs(totH(cc)-totH(cc-1))>0.001
+    if abs(totH(cc)-totH(cc-1))>0.01
         event=event+1;
         diff = zeros(10000,1);
 
@@ -12,11 +12,16 @@ while cc<280000
         %data = totH((cc-1):(cc-2)+10000);
         for i=1:14
             for j=1:size(fix(i).event)
-                data = totH((cc-1):(cc-1)+size(fix(i).event));
+                if 10000-274-size(fix(i).event,1)<0
+                    data = totH((cc-1):(cc-1)+size(fix(i).event));
+                else
+                    data = totH((cc-1)+10000-274-size(fix(i).event,1):(cc-1)+10000-274);
+                end
                 diff(j)=(fix(i).event(j)-data(j))^2;
             end
             ssr(i,event)=sum(diff);
         end
+        cc
         cc=cc+10000;
     else
         cc=cc+1;

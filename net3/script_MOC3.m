@@ -1,6 +1,6 @@
-%ss=[0 0 1 0 0 0 0];cs=[0 0 0 0 0 0 0];
+%ss=[0 0 0 0 0 0 0];cs=[0 0 0 0 0 0 0];
 % script_seriesPipeSolver
-function [dtH resH] = script_MOC3(ss,cs)
+function [dtH] = script_MOC3(ss,cs)
 % Input parameters, basic upstream and downstream conditions
 %See MOC description froom Water III for further understanding
 g = 9.81;%gravitational acceleration
@@ -24,7 +24,7 @@ spd=0.005;
 noise = zeros(Nt,1);
 %noise = (2*rand(Nt,1)-1)*5;
 sysnoise=zeros(Nt,1);
-%sysnoise=(2*rand(Nt,1)-1)/20;
+%sysnoise=(2*rand(Nt,1)-1)*0.2;
 %plot(t(1:Nt),sysnoise(1:Nt,1))
 
 for i = 1:Nt
@@ -188,10 +188,10 @@ k = 7; j = 1;
 end
 
   plot(t(1:Nt),datH(1:Nt,1))
-
-dtH = datH(1:Nt,1) + noise;
-if sum(cs)>0
-    resH = datH(Nt,1);
-else
-    resH = H0(Nt);
+dtH=datH(1:Nt,1) + noise;
+for noisecc=2:10000
+    if (datH(noisecc)-datH(noisecc-1))>0.1
+        noisecc
+        break
+    end
 end

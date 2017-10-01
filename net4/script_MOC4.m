@@ -1,4 +1,4 @@
-%ss=[1 0 0 0 0 0 0 0 0 0 0];cs=[0 0 0 0 0 0 0 0 0 0 0];
+%ss=[0 0 0 0 0 0 0 0 0 0 0];cs=[0 0 0 0 0 0 0 0 0 0 0];
 % script_seriesPipeSolver
 function [dtH] = script_MOC4(ss,cs)
 % Input parameters, basic upstream and downstream conditions
@@ -20,15 +20,16 @@ script_inputPipeProperties4 %Use to generate house network
 script_computePipeProperties %General code to build other values for the pipes (does not need to eb altered)
 script_computeAndInitialiseSteadyStateP4 %Generate starting Head and flow values (NOTE: CONTAINS HARD CODING SPECIFIC TO NETWORK)
         
-spd=0.01;
+spd=1;
 noise = zeros(Nt,1);
-noise = (2*rand(Nt,1)-1)*5;
-sysnoise=zeros(Nt,1);%randn(1);
+%noise = (2*rand(Nt,1)-1)*5;
+sysnoise=zeros(Nt,1);
+%sysnoise=(2*rand(Nt,1)-1)*0.2;
 
 for i = 1:Nt
 % Store fixed situation here (e.g. closure of valve, Q=0)
 % Storing Measurements
-    datH(i,1) = pipe(1,2).Ho(10);%Head at point 1, for storing values
+    datH(i,1) = pipe(1,2).Ho(50);%Head at point 1, for storing values
     datQ(i,1) = pipe(1,1).Qo(1);%Flow at point 1, for storing values
 
 % Computing INTERNAL VALUES
@@ -212,3 +213,10 @@ end
   plot(t(1:Nt),datH(1:Nt,1))
 dtH = datH(1:Nt,1) + noise;
 % end
+
+for noisecc=2:10000
+    if (datH(noisecc)-datH(noisecc-1))>0.1
+        noisecc
+        break
+    end
+end
